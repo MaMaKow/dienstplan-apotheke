@@ -76,6 +76,10 @@ Alle Stunden und Abwesenheiten mit aktuellstem Datum zuerst. Abwesenheit mit Fil
 
 filter for absence filter option for years and for specific reasons e.g. Vacation
 
+#### Jahresarbeitszeitkonto Ansicht nach Muster 28 
+composer require dompdf/dompdf
+annual-working-time-account.php
+
 ### API
 
 Eine API benutzen um Ferien im aktuellen Bundesland zu lesen. Diese sollten in einer Datenbanktabelle zwischengespeichert werden. z.B. https://ferien-api.de/api/v1/holidays/BY/2021 z.B. https://openholidaysapi.org/SchoolHolidays?countryIsoCode=DE&subdivisionCode=DE-BY&languageIsoCode=DE&validFrom=2023-01-01&validTo=2024-12-31

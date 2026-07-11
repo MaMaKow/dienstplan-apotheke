@@ -60,7 +60,9 @@ class InstallUtility {
             }
         });
 
-        self::$errorMessages = array();
+        if (!isset(self::$errorMessages)) {
+            self::$errorMessages = array();
+        }
     }
 
     public function getPdrFileSystemApplicationPath(): string {
@@ -91,7 +93,6 @@ class InstallUtility {
             $text_html .= "<p>" . $errorMessage . "</p>\n";
         }
         $text_html .= "</div>\n";
-        self::$errorMessages = array(); //Unsetting makes it possible to refill the array and build the new contents in another place.
         return $text_html;
     }
 

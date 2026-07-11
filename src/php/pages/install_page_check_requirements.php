@@ -57,7 +57,6 @@ require_once 'install_head.php';
             echo "<em class = 'install-info-postive'>" . gettext("passed") . "</em>";
         } else {
             echo "<em class = 'install-info-negative'>" . gettext("failed") . "</em>";
-            echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
@@ -70,7 +69,6 @@ require_once 'install_head.php';
             echo "<em class = 'install-info-postive'>" . gettext("passed") . "</em>";
         } else {
             echo "<em class = 'install-info-negative'>" . gettext("failed") . "</em>";
-            echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
@@ -83,7 +81,6 @@ require_once 'install_head.php';
             echo "<em class = 'install-info-postive'>" . gettext("passed") . "</em>";
         } else {
             echo "<em class = 'install-info-negative'>" . gettext("failed") . "</em>";
-            echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
@@ -96,7 +93,6 @@ require_once 'install_head.php';
             echo "<em class = 'install-info-postive'>" . gettext("passed") . "</em>";
         } else {
             echo "<em class = 'install-info-negative'>" . gettext("failed") . "</em>";
-            echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
@@ -109,7 +105,6 @@ require_once 'install_head.php';
             echo "<em class = 'install-info-postive'>" . gettext("passed") . "</em>";
         } else {
             echo "<em class = 'install-info-negative'>" . gettext("failed") . "</em>";
-            echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
@@ -134,7 +129,6 @@ require_once 'install_head.php';
     /Directory&gt;
     </pre>
     ";
-            echo $installUtility->buildErrorMessageDiv();
         }
         ?>
     </li>
@@ -145,7 +139,9 @@ if (true === $allRequirementsAreSatisfied) {
     <form action="install_page_check_requirements.php?language=<?= $languageBCP47 ?>" method="post">
         <input type="submit" id="InstallPageCheckRequirementsFormButton" name="InstallPageCheckRequirementsFormButton" value="<?= gettext("Next") ?>">
     </form>
-<?php } else { ?>
+<?php } else {
+echo $installUtility->buildErrorMessageDiv();
+?>
     <form action="install_page_check_requirements.php" method="post">
         <input type="submit" value="<?= gettext("Retry") ?>">
     </form>
