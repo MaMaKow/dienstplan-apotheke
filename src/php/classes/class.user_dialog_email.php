@@ -92,14 +92,22 @@ class user_dialog_email {
                     $message = $roster_item_object->to_email_message_string($context_string);
                     $Single_employee_roster = array($date_unix => array(0 => $roster_item_object));
                     $ics_file = \PDR\Output\ICalendar\ICalendar::buildIcsRosterEmployee($Single_employee_roster);
-                    self::save_notification_about_changed_roster_to_database(user::guess_user_key_by_employee_key($roster_item_object->employee_key), $roster_item_object->date_sql, $message, $ics_file);
+                    $probableUserKey = user::guess_user_key_by_employee_key($roster_item_object->employee_key);
+                    if(NULL === $probableUserKey){
+                      continue;
+                    }
+                    self::save_notification_about_changed_roster_to_database($probableUserKey, $roster_item_object->date_sql, $message, $ics_file);
                 }
                 if (!empty($Changed_roster_employee_key_list[$date_unix]) and in_array($roster_item_object->employee_key, $Changed_roster_employee_key_list[$date_unix])) {
                     $context_string = gettext("Your roster has changed.");
                     $message = $roster_item_object->to_email_message_string($context_string);
                     $Single_employee_roster = array($date_unix => array(0 => $roster_item_object));
                     $ics_file = \PDR\Output\ICalendar\ICalendar::buildIcsRosterEmployee($Single_employee_roster);
-                    self::save_notification_about_changed_roster_to_database(user::guess_user_key_by_employee_key($roster_item_object->employee_key), $roster_item_object->date_sql, $message, $ics_file);
+                    $probableUserKey = user::guess_user_key_by_employee_key($roster_item_object->employee_key);
+                    if(NULL === $probableUserKey){
+                      continue;
+                    }
+                    self::save_notification_about_changed_roster_to_database($probableUserKey, $roster_item_object->date_sql, $message, $ics_file);
                 }
             }
         }
@@ -120,7 +128,11 @@ class user_dialog_email {
                     $dateString = $roster_item_object->date_object->format("d.m.Y");
                     $message = sprintf(gettext('You are not in the roster anymore on %1$s.'), $dateString) . PHP_EOL;
                     $ics_file = ""; // TODO: Right now iCalendar can not handle events with the STATUS:CANCELED
-                    self::save_notification_about_changed_roster_to_database(user::guess_user_key_by_employee_key($roster_item_object->employee_key), $roster_item_object->date_sql, $message, $ics_file);
+                    $probableUserKey = user::guess_user_key_by_employee_key($roster_item_object->employee_key);
+                    if(NULL === $probableUserKey){
+                      continue;
+                    }
+                    self::save_notification_about_changed_roster_to_database($probableUserKey, $roster_item_object->date_sql, $message, $ics_file);
                 }
             }
         }
