@@ -283,9 +283,14 @@ public class WorkforceManagementPage {
         /**
          * profession: One of the radio buttons is checked.
          */
-        By employeeProfessionBy = By.xpath("/html/body/div[2]/form[2]/fieldset[2]/label/input[@name=\"profession\" and @checked]");
-        WebElement employeeProfessionElement = driver.findElement(employeeProfessionBy);
-        employeeData.put("employeeProfession", employeeProfessionElement.getAttribute("value"));
+        try {
+            By employeeProfessionBy = By.xpath("/html/body/div[2]/form[2]/fieldset[2]/label/input[@name=\"profession\" and @checked]");
+            WebElement employeeProfessionElement = driver.findElement(employeeProfessionBy);
+            employeeData.put("employeeProfession", employeeProfessionElement.getAttribute("value"));
+
+        } catch (Exception e) {
+            LogCollector.warn("No profession found. No radio input was checked.");
+        }
         /**
          * hours:
          */

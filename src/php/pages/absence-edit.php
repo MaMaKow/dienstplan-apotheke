@@ -1,4 +1,9 @@
 <?php
+
+use PDR\Workforce\Employee;
+
+use function Safe\error_log;
+
 /*
  * Copyright (C) 2017 Mandelkow
  *
@@ -23,7 +28,6 @@ $dateEndObject = new \DateTime("$year-12-31");
 $workforce = new \PDR\Workforce\Workforce($dateStartObject->format("Y-m-d"), $dateEndObject->format("Y-m-d"));
 $employeeKey = \user_input::get_variable_from_any_input('employee_key', FILTER_SANITIZE_NUMBER_INT, $workforce->getDefaultEmployeeKey());
 \PDR\Utility\GeneralUtility::createCookie('year', $year, 1);
-\PDR\Utility\GeneralUtility::createCookie('year', $year, 1);
 \PDR\Utility\GeneralUtility::createCookie('employee_key', $employeeKey, 30);
 $userDialog = new \user_dialog();
 $userDialog->readMessagesFromSession();
@@ -39,7 +43,20 @@ if (isset($_POST) && !empty($_POST)) {
     die("<p>Redirect to: <a href=$location>$location</a></p>");
 }
 $number_of_holidays_due = \PDR\Utility\AbsenceUtility::getNumberOfHolidaysDue($employeeKey, $workforce, $year);
-$number_of_holidays_principle = $workforce->getListOfEmployees()[$employeeKey]->getHolidays();
+try {
+    $employeeObject = $workforce->getEmployeeObject($employeeKey);
+} catch (Exception $exception) {
+    error_log('Workforce lookup failed for employeeKey: ' . $employeeKey . ' - ' . $exception->getMessage());
+    $userDialog->add_message(gettext('Invalid employee selection. Please check the employee ID and try again.'), E_USER_ERROR);
+    require \PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
+    require \PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
+    echo $userDialog->build_messages();
+    die('Fatal Error: Employee lookup failed for key [' . $employeeKey . '].');
+}
+if (! $employeeObject instanceof Employee) {
+    // This code should not be reached, because the try catch block above prevents this.
+}
+$number_of_holidays_principle = $employeeObject->getHolidays();
 $number_of_holidays_taken = \PDR\Database\AbsenceDatabaseHandler::getNumberOfHolidaysTaken($employeeKey, $year);
 $number_of_remaining_holidays_submitted = \PDR\Database\AbsenceDatabaseHandler::getNumberOfRemainingHolidaysSubmitted($employeeKey, $year);
 $number_of_remaining_holidays_left = $number_of_holidays_due - ($number_of_holidays_taken + $number_of_remaining_holidays_submitted);

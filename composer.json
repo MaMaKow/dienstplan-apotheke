@@ -2,21 +2,22 @@
   "name": "mamakow/dienstplan-apotheke",
   "description": "Dienstplanverwaltung für Apotheken",
   "license": "AGPL-3.0-or-later",
-    "autoload": {
-        "psr-4": {
-            "PDR\\": "src/php/classes/PDR/"
-        },
-        "classmap": [
-            "src/php/classes/"
-        ]
+  "autoload": {
+    "psr-4": {
+      "PDR\\": "src/php/classes/PDR/"
     },
-    "require": {
-        "phpmailer/phpmailer": "6.12.*",
-        "eluceo/ical": "2.14.*"
-    },
-    "config": {
-        "platform": {
-            "php": "8.0.27"
-        }
+    "classmap": [
+      "src/php/classes/"
+    ]
+  },
+  "require": {
+    "phpmailer/phpmailer": "6.12.*",
+    "eluceo/ical": "2.14.*",
+    "dompdf/dompdf": "^3.1"
+  },
+  "config": {
+    "platform": {
+      "php": "8.0.27"
     }
+  }
 }

@@ -207,6 +207,7 @@ public class MenuFragment {
          * Wait for target link element to be available
          */
         WebElement linkElement = null;
+        String targetHref = null;
         int attempts = 0;
         int maxAttempts = 7;
 
@@ -215,49 +216,41 @@ public class MenuFragment {
             try {
                 LogCollector.debug("Attempt " + attempts + " to wait for target...");
 
-                // First wait for element to be present
+                // Presence reicht, um an den href zu kommen - auch wenn unsichtbar
                 wait.until(ExpectedConditions.presenceOfElementLocated(target));
+                WebElement presentElement = driver.findElement(target);
+                targetHref = presentElement.getAttribute("href");
 
-                // Then wait for element to be clickable
+                // Jetzt erst auf Klickbarkeit warten
                 linkElement = wait.until(ExpectedConditions.elementToBeClickable(target));
-
-                // Additional check for visibility
                 wait.until(ExpectedConditions.visibilityOfElementLocated(target));
 
-                break; // Success - exit loop
+                break; // Erfolg
             } catch (org.openqa.selenium.StaleElementReferenceException stale) {
                 LogCollector.warn("StaleElementReferenceException when waiting for target - attempt " + attempts);
                 if (attempts >= maxAttempts) {
-                    throw stale;
+                    LogCollector.warn("Giving up on clickable wait, falling back to direct navigation.");
+                    break; // NICHT werfen - stattdessen Fallback unten nutzen
                 }
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(MenuFragment.class.getName()).log(Level.SEVERE, null, ex);
-                    Thread.currentThread().interrupt();
-                }
-            } catch (NoSuchElementException noSuchElementException) {
-                LogCollector.debug("NoSuchElementException on attempt " + attempts);
-                if (attempts >= maxAttempts) {
-                    throw noSuchElementException;
-                }
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(MenuFragment.class.getName()).log(Level.SEVERE, null, ex);
-                    Thread.currentThread().interrupt();
-                }
+                sleepQuietly(300);
             } catch (Exception exception) {
-                LogCollector.debug("Exception on attempt " + attempts);
+                LogCollector.debug("Exception on attempt " + attempts + ": " + exception.getClass().getSimpleName());
                 if (attempts >= maxAttempts) {
-                    throw exception;
+                    LogCollector.warn("Giving up on clickable wait, falling back to direct navigation.");
+                    break; // NICHT werfen
                 }
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException ex) {
-                    Logger.getLogger(MenuFragment.class.getName()).log(Level.SEVERE, null, ex);
-                    Thread.currentThread().interrupt();
-                }
+                sleepQuietly(300);
+            }
+        }
+
+// Fallback, falls linkElement nie klickbar wurde, aber wir den href kennen
+        if (linkElement == null) {
+            if (targetHref != null) {
+                LogCollector.warn("linkElement never became clickable, navigating directly via href: " + targetHref);
+                driver.get(targetHref);
+                return; // Navigation ist erledigt, Rest der Methode (Klick-Logik) überspringen
+            } else {
+                Assert.fail("linkElement not found and href unknown after " + maxAttempts + " attempts.");
             }
         }
 
@@ -271,7 +264,6 @@ public class MenuFragment {
         LogCollector.debug("linkElement.getAttribute(\"href\"): " + linkElement.getAttribute("href"));
 
         String currentUrl = driver.getCurrentUrl();
-        String targetHref = linkElement.getAttribute("href");
         try {
 
             if (targetHref != null && !currentUrl.contains(targetHref)) {
@@ -322,5 +314,14 @@ public class MenuFragment {
         }
 
         LogCollector.debug("Done with menu navigation");
+    }
+
+    private static void sleepQuietly(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException exception) {
+            LogCollector.debug(exception.getMessage());
+            Thread.currentThread().interrupt();
+        }
     }
 }

@@ -26,9 +26,10 @@ namespace PDR\Input;
  *
  * @author Mandelkow
  */
-class OvertimeInputHandler {
-
-    public static function handleUserInput($session, $employeeKey): bool {
+class OvertimeInputHandler
+{
+    public static function handleUserInput($session, $employeeKey): bool
+    {
         $userDialog = new \user_dialog();
         if (!filter_has_var(INPUT_POST, 'deleteRow')
                 and !filter_has_var(INPUT_POST, 'submitStunden')
@@ -42,12 +43,10 @@ class OvertimeInputHandler {
          * Deleting rows of data:
          */
         if (filter_has_var(INPUT_POST, 'deleteRow')) {
-            error_log("OvertimeInputHandler: Deleting rows of data");
             $result = self::handleUserInputDelete($session);
             if (false === $result) {
                 return false;
             }
-            error_log("OvertimeInputHandler: Deleted rows of data");
         }
 
         /**
@@ -79,7 +78,8 @@ class OvertimeInputHandler {
         return true;
     }
 
-    private static function handleUserInputUpdate($session) {
+    private static function handleUserInputUpdate($session)
+    {
         $employeeKey = filter_input(INPUT_POST, 'editEmployeeKey', FILTER_SANITIZE_NUMBER_INT);
         $dateOldString = filter_input(INPUT_POST, 'editDateOld', FILTER_SANITIZE_SPECIAL_CHARS);
         $dateOld = new \DateTime($dateOldString);
@@ -118,15 +118,20 @@ class OvertimeInputHandler {
         \PDR\Database\OvertimeDatabaseHandler::updateOvertimeInDatabase($employeeKey, $dateOld, $dateNew, $overtimeHoursNew, $balanceNew, $overtimeReasonTrimmed);
         try {
             if (self::shouldNotifyAdmin($session)) {
-                self::sendChangeNotification($session, $employeeKey,
-                        $dateOld, $dateNew,
-                        $overtimeHoursOld, $overtimeHoursNew,
-                        $overtimeReasonOld, $overtimeReasonNew
+                self::sendChangeNotification(
+                    $session,
+                    $employeeKey,
+                    $dateOld,
+                    $dateNew,
+                    $overtimeHoursOld,
+                    $overtimeHoursNew,
+                    $overtimeReasonOld,
+                    $overtimeReasonNew
                 );
             }
         } catch (Exception $mailException) {
             \PDR\Utility\GeneralUtility::printDebugVariable($mailException->getMessage());
-            $userDialog = new \user_dialog;
+            $userDialog = new \user_dialog();
             $userDialog->add_message(gettext("There was an error when trying to send a notification."), E_USER_ERROR);
         }
     }
@@ -145,7 +150,8 @@ class OvertimeInputHandler {
      * @param \sessions $session The current user session object used to check user privileges and handle user dialogs.
      * @return void This function does not return any value.
      */
-    private static function handleUserInputDelete($session): bool {
+    private static function handleUserInputDelete($session): bool
+    {
         $deletionEmployeeKey = filter_input(INPUT_POST, 'deletionEmployeeKey', FILTER_SANITIZE_NUMBER_INT);
         $deletionDate = filter_input(INPUT_POST, 'deletionDate', FILTER_SANITIZE_SPECIAL_CHARS);
         $deletionHours = filter_input(INPUT_POST, 'deletionHours', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -162,13 +168,10 @@ class OvertimeInputHandler {
         }
 
         // Step 1: Delete the overtime entry
-        error_log("OvertimeInputHandler: Actually tell the OvertimeDatabaseHandler to delete the entry.");
         \PDR\Database\OvertimeDatabaseHandler::deleteOvertimeEntry($deletionEmployeeKey, $deletionDate);
 
         // Step 2: Check if we should notify the admin
-        error_log("OvertimeInputHandler: Think about sending an email.");
         if (self::shouldNotifyAdmin($session)) {
-            error_log("OvertimeInputHandler: Yes, we will send an email.");
             // Step 3: Prepare and send notification
             self::sendDeletionNotification($session, $deletionEmployeeKey, $deletionDate, $deletionHours, $deletionReason);
         }
@@ -188,8 +191,8 @@ class OvertimeInputHandler {
      * @param string $deletionDate The date of the deleted overtime entry, formatted as a string.
      * @return void This function does not return any value.
      */
-    private static function sendDeletionNotification($session, int $employeeKey, string $deletionDate, string $deletionHours, string $deletionReason): void {
-        error_log("OvertimeInputHandler: Entering sendDeletionNotification for employeeKey=$employeeKey, date=$deletionDate");
+    private static function sendDeletionNotification($session, int $employeeKey, string $deletionDate, string $deletionHours, string $deletionReason): void
+    {
         $configuration = new \PDR\Application\Configuration();
         $workforce = new \PDR\Workforce\Workforce();
         $employeeName = $workforce->getEmployeeFullName($employeeKey);
@@ -208,17 +211,22 @@ class OvertimeInputHandler {
         // Send Email
         $userDialogEmail = new \user_dialog_email();
         $result = $userDialogEmail->send_email(
-                $configuration->getContactEmail(),
-                $subject,
-                $message
+            $configuration->getContactEmail(),
+            $subject,
+            $message
         );
-        \PDR\Utility\GeneralUtility::printDebugVariable($result);
     }
 
-    private static function sendChangeNotification(\sessions $session, int $employeeKey,
-            \DateTime $dateOld, \DateTime $dateNew,
-            float $overtimeHoursOld, float $overtimeHoursNew,
-            string $overtimeReasonOld, string $overtimeReasonNew): void {
+    private static function sendChangeNotification(
+        \sessions $session,
+        int $employeeKey,
+        \DateTime $dateOld,
+        \DateTime $dateNew,
+        float $overtimeHoursOld,
+        float $overtimeHoursNew,
+        string $overtimeReasonOld,
+        string $overtimeReasonNew
+    ): void {
         $configuration = new \PDR\Application\Configuration();
         $workforce = new \PDR\Workforce\Workforce();
         $employeeName = $workforce->getEmployeeFullName($employeeKey);
@@ -240,11 +248,10 @@ class OvertimeInputHandler {
         // Send Email
         $userDialogEmail = new \user_dialog_email();
         $mailResult = $userDialogEmail->send_email(
-                $configuration->getContactEmail(),
-                $subject,
-                $message
+            $configuration->getContactEmail(),
+            $subject,
+            $message
         );
-        error_log("OvertimeInputHandler: sendChangeNotification mail result = " . var_export($mailResult, true));
     }
 
     /**
@@ -257,9 +264,9 @@ class OvertimeInputHandler {
      * @param \sessions $session The current user session object used to check user privileges.
      * @return bool True if the user lacks the required privilege and an email notification should be sent; false otherwise.
      */
-    private static function shouldNotifyAdmin(\sessions $session): bool {
+    private static function shouldNotifyAdmin(\sessions $session): bool
+    {
         $result = !$session->user_has_privilege(\sessions::PRIVILEGE_CREATE_ROSTER);
-        error_log("OvertimeInputHandler: shouldNotifyAdmin = " . ($result ? 'true' : 'false'));
         return $result;
     }
 
@@ -278,12 +285,14 @@ class OvertimeInputHandler {
      * @return string The formatted date string, which represents the original date in a short format
      *                according to the specified locale.
      */
-    private static function formatReadableDate(string $dateString, string $locale): string {
+    private static function formatReadableDate(string $dateString, string $locale): string
+    {
         $dateObject = new \DateTime($dateString);
         return \PDR\DateTime\DateTimeUtility::formatReadableDateObject($dateObject);
     }
 
-    public static function handleUserInputInsert() {
+    public static function handleUserInputInsert()
+    {
         $userDialog = new \user_dialog();
         $employeeKey = filter_input(INPUT_POST, 'employee_key', FILTER_SANITIZE_NUMBER_INT);
         $date = filter_input(INPUT_POST, 'datum', FILTER_SANITIZE_SPECIAL_CHARS);
@@ -309,7 +318,7 @@ class OvertimeInputHandler {
             $userDialog->add_message($messageDateWarning, E_USER_WARNING);
             $messageJSWarning = gettext('Please enable JavaScript in order to allow PDR to handle this case.');
             $userDialog->add_message($messageJSWarning, E_USER_WARNING);
-            return FALSE;
+            return false;
         }
         $overtimeReason = filter_input(INPUT_POST, 'grund', FILTER_SANITIZE_SPECIAL_CHARS);
         \PDR\Database\OvertimeDatabaseHandler::insertOvertimeToDatabase($employeeKey, $insertedDateObject, $overtimeHoursNew, $overtimeReason);
@@ -320,7 +329,8 @@ class OvertimeInputHandler {
      * @return void
      * @throws \Exception
      */
-    public static function handleOvertimeInputFromRoster(): void {
+    public static function handleOvertimeInputFromRoster(): void
+    {
         $employeeKey = (int) filter_input(INPUT_POST, 'employeeKey', FILTER_SANITIZE_NUMBER_INT);
         $dateString = filter_input(INPUT_POST, 'date', FILTER_SANITIZE_SPECIAL_CHARS);
         if (null === $dateString) {

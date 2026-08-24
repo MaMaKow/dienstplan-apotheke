@@ -39,9 +39,10 @@
  *
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
-class user_dialog_email {
-//    use PHPMailer\PHPMailer\PHPMailer;
-//    use PHPMailer\PHPMailer\Exception;
+class user_dialog_email
+{
+    //    use PHPMailer\PHPMailer\PHPMailer;
+    //    use PHPMailer\PHPMailer\Exception;
 
     /**
      *
@@ -53,7 +54,8 @@ class user_dialog_email {
      */
     private $maximum_future_days;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->maximum_future_days = 14;
     }
 
@@ -75,7 +77,8 @@ class user_dialog_email {
      * @param array $Deleted_roster_employee_key_list An array of days, each with an array of employee_keys who were deleted from the Roster
      * @return void
      */
-    public function create_notification_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_key_list, $Changed_roster_employee_key_list, $Deleted_roster_employee_key_list) {
+    public function create_notification_about_changed_roster_to_employees($Roster, $Roster_old, $Inserted_roster_employee_key_list, $Changed_roster_employee_key_list, $Deleted_roster_employee_key_list)
+    {
         foreach ($Roster as $date_unix => $Roster_day_array) {
             if (strtotime('+' . $this->maximum_future_days . ' days', time()) <= $date_unix) {
                 continue;
@@ -84,7 +87,7 @@ class user_dialog_email {
                 continue;
             }
             foreach ($Roster_day_array as $roster_item_object) {
-                if (NULL === $roster_item_object->employee_key) {
+                if (null === $roster_item_object->employee_key) {
                     continue;
                 }
                 if (!empty($Inserted_roster_employee_key_list[$date_unix]) and in_array($roster_item_object->employee_key, $Inserted_roster_employee_key_list[$date_unix])) {
@@ -93,8 +96,8 @@ class user_dialog_email {
                     $Single_employee_roster = array($date_unix => array(0 => $roster_item_object));
                     $ics_file = \PDR\Output\ICalendar\ICalendar::buildIcsRosterEmployee($Single_employee_roster);
                     $probableUserKey = user::guess_user_key_by_employee_key($roster_item_object->employee_key);
-                    if(NULL === $probableUserKey){
-                      continue;
+                    if (null === $probableUserKey) {
+                        continue;
                     }
                     self::save_notification_about_changed_roster_to_database($probableUserKey, $roster_item_object->date_sql, $message, $ics_file);
                 }
@@ -104,8 +107,8 @@ class user_dialog_email {
                     $Single_employee_roster = array($date_unix => array(0 => $roster_item_object));
                     $ics_file = \PDR\Output\ICalendar\ICalendar::buildIcsRosterEmployee($Single_employee_roster);
                     $probableUserKey = user::guess_user_key_by_employee_key($roster_item_object->employee_key);
-                    if(NULL === $probableUserKey){
-                      continue;
+                    if (null === $probableUserKey) {
+                        continue;
                     }
                     self::save_notification_about_changed_roster_to_database($probableUserKey, $roster_item_object->date_sql, $message, $ics_file);
                 }
@@ -120,7 +123,7 @@ class user_dialog_email {
                 continue;
             }
             foreach ($Roster_day_array as $roster_item_object) {
-                if (NULL === $roster_item_object->employee_key) {
+                if (null === $roster_item_object->employee_key) {
                     continue;
                 }
 
@@ -129,8 +132,8 @@ class user_dialog_email {
                     $message = sprintf(gettext('You are not in the roster anymore on %1$s.'), $dateString) . PHP_EOL;
                     $ics_file = ""; // TODO: Right now iCalendar can not handle events with the STATUS:CANCELED
                     $probableUserKey = user::guess_user_key_by_employee_key($roster_item_object->employee_key);
-                    if(NULL === $probableUserKey){
-                      continue;
+                    if (null === $probableUserKey) {
+                        continue;
                     }
                     self::save_notification_about_changed_roster_to_database($probableUserKey, $roster_item_object->date_sql, $message, $ics_file);
                 }
@@ -138,9 +141,10 @@ class user_dialog_email {
         }
     }
 
-    private static function save_notification_about_changed_roster_to_database(int $user_key, string $date_sql, string $message, string $ics_file = "") {
-        if (NULL === $user_key) {
-            return FALSE;
+    private static function save_notification_about_changed_roster_to_database(int $user_key, string $date_sql, string $message, string $ics_file = "")
+    {
+        if (null === $user_key) {
+            return false;
         }
         /*
          * TODO: Do not send mail directly.
@@ -174,7 +178,8 @@ class user_dialog_email {
         ));
     }
 
-    public function aggregate_messages_about_changed_roster_to_employees(PDR\Workforce\Workforce $workforce) {
+    public function aggregate_messages_about_changed_roster_to_employees(PDR\Workforce\Workforce $workforce)
+    {
         $sql_query = "SELECT DISTINCT `user_key` "
                 . " FROM `user_email_notification_cache`;";
         $result = database_wrapper::instance()->run($sql_query);
@@ -183,7 +188,7 @@ class user_dialog_email {
             $userObject = new user($user_key);
             $aggregated_message = sprintf(gettext('Dear %1$s,'), $userObject->user_name) . PHP_EOL . PHP_EOL;
             $aggregated_ics_file = (string) "";
-            $notifications_exist = FALSE;
+            $notifications_exist = false;
 
             $sql_query = "SELECT `notification_id`, `user_key`, `date`, `notification_text`, `notification_ics_file` "
                     . " FROM `user_email_notification_cache` "
@@ -193,7 +198,7 @@ class user_dialog_email {
             ));
             while ($row = $result_notification_employee->fetch(PDO::FETCH_OBJ)) {
                 $List_of_deletable_notifications[] = $row->notification_id;
-                $notifications_exist = TRUE;
+                $notifications_exist = true;
                 $aggregated_message .= $row->notification_text . PHP_EOL;
                 $aggregated_ics_file .= $row->notification_ics_file . "\r\n";
             }
@@ -201,7 +206,7 @@ class user_dialog_email {
             if ($notifications_exist) {
                 $aggregated_message .= PHP_EOL . gettext('Sincerely yours,') . PHP_EOL . PHP_EOL . gettext('the friendly roster robot') . PHP_EOL;
                 $mail_result = $this->send_email_about_changed_roster_to_employees($user_key, $aggregated_message, $aggregated_ics_file);
-                if (TRUE === $mail_result) {
+                if (true === $mail_result) {
                     $sql_query = "DELETE FROM `user_email_notification_cache` WHERE `notification_id` = :notification_id";
                     $statement = database_wrapper::instance()->prepare($sql_query);
                     foreach ($List_of_deletable_notifications as $deletable_notification) {
@@ -212,7 +217,8 @@ class user_dialog_email {
         }
     }
 
-    public function clean_up_user_email_notification_cache() {
+    public function clean_up_user_email_notification_cache()
+    {
         $sql_query = "DELETE FROM `user_email_notification_cache` "
                 . " WHERE `date` < NOW();";
         database_wrapper::instance()->run($sql_query);
@@ -226,9 +232,9 @@ class user_dialog_email {
             $sql_query = "SELECT `notification_id` "
                     . " FROM `user_email_notification_cache`;";
             $result = database_wrapper::instance()->run($sql_query);
-            $table_is_empty = TRUE;
+            $table_is_empty = true;
             while ($row = $result->fetch(PDO::FETCH_OBJ)) {
-                $table_is_empty = FALSE;
+                $table_is_empty = false;
                 break;
             }
             if ($table_is_empty) {
@@ -260,35 +266,37 @@ class user_dialog_email {
         }
     }
 
-    private function send_email_about_changed_roster_to_employees($user_key, $message, $ics_file_string) {
-        if (NULL === $user_key) {
-            return FALSE;
+    private function send_email_about_changed_roster_to_employees($user_key, $message, $ics_file_string)
+    {
+        if (null === $user_key) {
+            return false;
         }
         $user = new user($user_key);
         if (!$user->exists()) {
-            return FALSE;
+            return false;
         }
 
-        if (FALSE == $user->wants_emails_on_changed_roster()) {
+        if (false == $user->wants_emails_on_changed_roster()) {
             /*
              * The user does not want to be informed about roster changes via email.
              */
-            return FALSE;
+            return false;
         }
         $mail_success = $this->send_email($user->email, gettext('Your roster has changed.'), $message, $ics_file_string, 'iCalendar.ics');
         return $mail_success;
     }
 
-    public function send_email($recipient, $subject, $message, $attachment_string = NULL, $attachment_filename = NULL): bool {
+    public function send_email($recipient, $subject, $message, $attachment_string = null, $attachment_filename = null): bool
+    {
         $configuration = new \PDR\Application\Configuration();
-//        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/PHPMailer.php';
-//        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/SMTP.php';
-//        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/Exception.php';
+        //        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/PHPMailer.php';
+        //        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/SMTP.php';
+        //        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/3rdparty/PHPMailer/Exception.php';
 
         $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
-        //$mail->SMTPDebug = 0; // No output
+        $mail->SMTPDebug = 0; // No output
         //$mail->SMTPDebug = 1; // commands
-        $mail->SMTPDebug = 2; // Data and commands
+        //$mail->SMTPDebug = 2; // Data and commands
         //$mail->SMTPDebug = 3; // 3 As 2 plus connection status
         //$mail->SMTPDebug = 4; // 4 Detaied Low-level data output.
         $mail->Debugoutput = function ($str, $level) {
@@ -298,15 +306,11 @@ class user_dialog_email {
             /*
              * Server settings
              */
-            error_log("send_email: method=" . $configuration->getEmailMethod()
-                    . " host=" . $configuration->getEmailSmtpHost()
-                    . " port=" . $configuration->getEmailSmtpPort()
-                    . " recipient=" . $recipient);
             switch ($configuration->getEmailMethod()) {
                 case 'smtp':
                     if (empty($configuration->getEmailSmtpHost()) or empty($configuration->getEmailSmtpPort()) or empty($configuration->getEmailSmtpUsername()) or empty($configuration->getEmailSmtpPassword())) {
                         \PDR\Utility\GeneralUtility::printDebugVariable('Error while sending mail: SMTP not correctly configured');
-                        return FALSE;
+                        return false;
                     }
                     $mail->isSMTP();
                     $mail->SMTPAuth = true;
@@ -316,7 +320,7 @@ class user_dialog_email {
                     $mail->Username = $configuration->getEmailSmtpUsername();
                     $mail->Password = $configuration->getEmailSmtpPassword();
                     $isMailHog = (
-                            $mail->Port == 1025 &&
+                        $mail->Port == 1025 &&
                             in_array($mail->Host, [
                                 'localhost', // localhost outside of docker tests
                                 '127.0.0.1', // IPv4 loopback
@@ -329,7 +333,6 @@ class user_dialog_email {
                         /**
                          * For the purpose of testing mails with mailhog, TLS and STARTTLS have to be disabled.
                          */
-                        error_log("send_email: MailHog mode detected — disabling TLS and auth");
                         $mail->SMTPAuth = false; // No authentication required for MailHog
                         $mail->SMTPSecure = ''; // Disable TLS/SSL
                         $mail->SMTPAutoTLS = false; // Disable automatic TLS negotiation
@@ -354,7 +357,7 @@ class user_dialog_email {
             /*
              * Attachments
              */
-            if (NULL !== $attachment_string and !empty($attachment_string) and !empty($attachment_filename)) {
+            if (null !== $attachment_string and !empty($attachment_string) and !empty($attachment_filename)) {
                 $mail->addStringAttachment($attachment_string, $attachment_filename);
             }
             /*
@@ -362,19 +365,17 @@ class user_dialog_email {
              */
             $mail->CharSet = 'UTF-8';
             $mail->Encoding = 'base64';
-            $mail->isHTML(FALSE);
+            $mail->isHTML(false);
             $mail->Subject = $configuration->getApplicationName() . ": " . $subject;
             $mail->Body = $message;
             //$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-            error_log("send_email: Calling mail->send() now");
             $mail_success = $mail->send();
-            error_log("send_email: mail->send() returned " . var_export($mail_success, true));
             return $mail_success;
         } catch (Exception $exception) {
             \PDR\Utility\GeneralUtility::printDebugVariable('Email Message could not be sent. Mailer Error: ', $mail->ErrorInfo, $exception);
-            $user_dialog = new user_dialog;
+            $user_dialog = new user_dialog();
             $user_dialog->add_message(gettext('Error while trying to send email.') . ' ' . gettext('Please see the error log for details!'));
-            return FALSE;
+            return false;
         }
     }
 }

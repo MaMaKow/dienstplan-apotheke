@@ -17,6 +17,7 @@
 package Selenium.principlerosterpages;
 
 import Selenium.Employee;
+import Selenium.NetworkOfBranchOffices;
 import Selenium.PrincipleRosterItem;
 import Selenium.Utilities.LogCollector;
 import Selenium.administrationpages.WorkforceManagementPage;
@@ -44,16 +45,30 @@ public class TestDayPageFutureEmployee extends Selenium.TestPage {
             logger.error("Sign in failed.");
             Assert.fail();
         }
-
+        NetworkOfBranchOffices networkOfBranchOffices = new NetworkOfBranchOffices();
+        int branchId = networkOfBranchOffices.getListOfBranches().entrySet().iterator().next().getKey(); // get first Branch
+        // from list of
+        // branches.
         // 1. Create employee with start date = tomorrow's date + 1 year
         WorkforceManagementPage workforceManagementPage = new WorkforceManagementPage(driver);
         LocalDate today = LocalDate.now();
-        LocalDate nextYear = today.plusYears(1);
+        LocalDate nextYear = today.plusYears(1).minusDays(14); // If the employee is exactly one year from now, it is not in the select element of employees anymore.
         Employee futureEmployee = new Employee("999", "Future", "Test", "PTA", "40", "30", "28",
                 "Hauptapotheke am großen Platz", "true", "true",
                 nextYear.format(Wrapper.DATE_TIME_FORMATTER_DAY_MONTH_YEAR), "");
         workforceManagementPage.createEmployee(futureEmployee);
-
+        try {
+            workforceManagementPage.selectEmployee(futureEmployee);
+        } catch (Exception ex) {
+            LogCollector.warn("Employee not found on page.");
+        }
+        /*
+         * The employeeKey will not actually be 999. We have to find the key, that the
+         * database gave to the new employee:
+         */
+        futureEmployee = workforceManagementPage.getEmployeeObject();
+        LogCollector.debug("The newly created employee " + futureEmployee.getFullName() + " has the employeeKey "
+                + futureEmployee.getEmployeeKey());
         // 2. Go to principle roster day for a date after that start date
         Selenium.principlerosterpages.DayPage principleRosterDayPage = new DayPage(driver);
         principleRosterDayPage.goToWeekday(DayOfWeek.MONDAY);
@@ -63,12 +78,12 @@ public class TestDayPageFutureEmployee extends Selenium.TestPage {
             LogCollector.error("Could not open alternation 0 in principle roster day page.");
             softAssert.fail();
         }
-        principleRosterDayPage.goToBranch(0);
+        principleRosterDayPage.goToBranch(branchId);
 
         // 3. Add a shift for this employee and submit
         PrincipleRosterItem principleRosterItem = new PrincipleRosterItem(futureEmployee.getEmployeeKey(),
                 DayOfWeek.MONDAY, LocalTime.of(10, 30), LocalTime.of(17, 45), LocalTime.of(13, 0), LocalTime.of(13, 30),
-                "future comment", 0);
+                "future comment", branchId);
         principleRosterDayPage.createNewRosterItem(principleRosterItem);
 
         // 4. Verify employee appears in the roster

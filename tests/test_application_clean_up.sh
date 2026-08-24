@@ -12,6 +12,6 @@ source $scriptPath/config/pdrDbUser.password
 
 # CLEAN UP
 #mysql -u pdrDbUser -p$pdrDbUserPassword -e "DROP DATABASE pdrTest_$versionString;"
-mariadb -u pdrDbUser -p$pdrDbUserPassword -e "DROP DATABASE pdrTest;"
+mariadb -u pdrDbUser -p$pdrDbUserPassword -e "DROP DATABASE IF EXISTS pdrTest;"
 #rm -rf $testDirectory/dienstplan-test-$versionString
 #rm -rf $testDirectory/dienstplan-test*
