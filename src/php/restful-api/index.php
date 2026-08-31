@@ -178,5 +178,15 @@ $router->addRoute(
         'Details einer bestimmten Filiale abrufen'
 );
 
+/**
+ * Emergency Service Routes
+ */
+$router->addRoute(
+        'GET',
+        '/emergency-services/{year}/branches/{branch_id}',
+        'EmergencyServiceController',
+        'getEmergencyServicesByYear',
+        'Notdienste eines Jahres für eine bestimmte Filiale abrufen'
+);
 // Request verarbeiten
 $router->handle($requestUri, $method);

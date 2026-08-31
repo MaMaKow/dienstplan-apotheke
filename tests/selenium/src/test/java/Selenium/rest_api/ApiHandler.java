@@ -18,6 +18,7 @@
  */
 package Selenium.rest_api;
 
+import Selenium.PropertyFile;
 import Selenium.Utilities.LogCollector;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -36,6 +37,8 @@ import java.util.logging.Logger;
  * @author Mandelkow
  */
 public class ApiHandler {
+
+    private static PropertyFile propertyFile;
 
     public static HttpResponse<String> sendPostRequestAsJson(String url, String payload) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
@@ -66,6 +69,14 @@ public class ApiHandler {
     public static HttpResponse<String> sendAuthorizedGetRequest(String url, HashMap<String, String> listOfParameters) throws IOException, InterruptedException, Exception {
         String accessToken = null;
         try {
+            // Ensure we are authenticated before running tests
+            if (!POST_authenticateEndpoint.isAuthenticated()) {
+                propertyFile = new PropertyFile();
+                String userName = propertyFile.getPdrUserName();
+                String userPassphrase = propertyFile.getPdrUserPassword();
+                String testPageUrl = propertyFile.getTestPageUrl();
+                new POST_authenticateEndpoint(userName, userPassphrase, testPageUrl);
+            }
             accessToken = POST_authenticateEndpoint.getAccessToken();
             LogCollector.debug("Using existing accessToken");
 

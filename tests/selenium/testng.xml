@@ -81,6 +81,7 @@
             <class name="Selenium.rest_api.TestGET_rosterEndpoint" />
             <class name="Selenium.rest_api.TestGET_branchEndpoint" />
             <class name="Selenium.rest_api.TestGET_absenceEndpoint" />
+            <class name="Selenium.rest_api.TestEmergencyServiceApiIntegration" />
             <!--
             -->
         </classes>
