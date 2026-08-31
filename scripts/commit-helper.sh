@@ -84,8 +84,11 @@ base_patch="${BASH_REMATCH[3]}"
 # Get the current branch name:
 current_branch=$(git symbolic-ref --short HEAD)
 
-if ! git merge-base --is-ancestor origin/"$current_branch" HEAD; then
-    error_exit "Lokaler Branch enthält nicht die neuesten Remote-Änderungen."
+# Check ancestor only if the branch already exists on origin:
+if git rev-parse --verify "origin/$current_branch" >/dev/null 2>&1; then
+    if ! git merge-base --is-ancestor "origin/$current_branch" HEAD; then
+        error_exit "Lokaler Branch enthält nicht die neuesten Remote-Änderungen."
+    fi
 fi
 
 # Display information about the current state:
@@ -168,7 +171,6 @@ git add "./src/php/database_version_hash.php"
 
 echo "Starte GPG-signierten Commit..."
 git commit --gpg-sign
-#git pull --rebase origin "$current_branch" || error_exit "Rebase fehlgeschlagen" # Wir haben mit 'git merge-base --is-ancestor' bereits geprüft, dass kein rebase notwendig ist.
 
 if [ false == "$featureBranch" ]; then
     echo "Commit wird mit Version $new_version getaggt."
@@ -208,14 +210,3 @@ if [ false == "$featureBranch" ]; then
     done
     git push origin "$current_branch:testing"
 fi
-
-# TODO: <p lang=de>Ich würde hier sehr gerne das script Tests\get-database-structure.php laufen lassen.
-# Dabei gibt es allerdings ein Problem.
-# Eine Entwicklungsumgebung hat nicht zwingend Zugriff auf eine Datenbank. Sie kann also nicht immer ihre eigene Datenbankstruktur besitzen.
-# Um die Datebankstruktur als Datei zu speichern und auch den PDR_DATABASE_VERSION_HASH upzudaten, muss ich aber Zugriff auf die "aktuelle" Datanbank haben.
-# Als workaround könnte man vielleicht den hash über die vorhandenen *.sql files machen.
-# Funktioniert das?
-# Auf jeden Fall müssten die folgenden Zeilen berücksichtigt werden:
-# $table_structure_create_with_increment = preg_replace('/CREATE TABLE/', 'CREATE TABLE IF NOT EXISTS', $row['Create Table']);
-# $table_structure_create = preg_replace('/AUTO_INCREMENT=[0-9]*/', '', $table_structure_create_with_increment);
-# </p>

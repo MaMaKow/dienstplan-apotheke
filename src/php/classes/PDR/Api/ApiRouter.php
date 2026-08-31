@@ -1,7 +1,7 @@
 <?php
 
 /*
- * Copyright (C) 2015 Mandelkow
+ * Copyright (C) 2025 Mandelkow
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -25,24 +25,25 @@ class ApiRouter {
      * Fügt eine neue Route hinzu.
      *
      * @param string $method HTTP-Methode (GET, POST, ...)
-     * @param string $path Lesbarer Pfad mit Platzhaltern wie {id}, {year}, ...
+     * @param string $path Lesbarer Pfad mit Platzhaltern wie {id}, {year}, {branch_id}, ...
      * @param string $controller Controller-Klasse
      * @param string $action Methode im Controller
      * @param string $description Beschreibung für API-Consumer
      */
     public function addRoute($method, $path, $controller, $action, $description = '') {
-        // Platzhalter in Regex umwandeln: {id} -> (\d+), {year} -> (\d{4}), {any} -> (.+)
-        $pattern = preg_replace([
-            '/\{id\}/',
-            '/\{year\}/',
-            '/\{any\}/'
-                ], [
-            '(\d+)',
-            '(\d{4})',
-            '(.+)'
-                ], $path);
+        // Generischer Regex: Verwandelt jeden Platzhalter {param_name} in eine benannte Gruppe (?P<param_name>[^/]+)
+        // Spezifische Validierung (z.B. 4 Ziffern fürs Jahr) erfolgt im Controller oder per Regex-Muster.
+        $pattern = preg_replace_callback('/\{([a-zA-Z0-9_]+)\}/', function ($matches) {
+            $paramName = $matches[1];
+            if ($paramName === 'year') {
+                return '(?P<year>\d{4})';
+            }
+            if (str_contains($paramName, 'id')) {
+                return '(?P<' . $paramName . '>\d+)';
+            }
+            return '(?P<' . $paramName . '>[^/]+)';
+        }, $path);
 
-        // Regex für preg_match
         $pattern = '~^' . $pattern . '$~';
 
         $this->routes[] = [
@@ -62,18 +63,16 @@ class ApiRouter {
             if ($route['method'] === $method && preg_match($route['pattern'], $apiEndpoint, $matches)) {
                 $controllerClass = $route['controller'];
                 $action = $route['action'];
-                //error_log("We found a match:");
-                //PDR\Utility\GeneralUtility::printDebugVariable($controllerClass);
-                //PDR\Utility\GeneralUtility::printDebugVariable($action);
+
+                // Nur die benannten String-Schlüssel filtern, um $matches von numerischen Indizes zu säubern
+                $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
 
                 $controller = new $controllerClass();
-                return $controller->$action($matches);
+                return $controller->$action($params);
             }
         }
 
-// Default: API-Info anzeigen
-        //PDR\Utility\GeneralUtility::printDebugVariable($requestUri . " does not match any registered route.");
-        //PDR\Utility\GeneralUtility::printDebugVariable($this->routes);
+        // Bei fehlendem Route-Match: Zeige API-Informationen
         $this->showApiInfo();
     }
 
@@ -88,14 +87,14 @@ class ApiRouter {
         foreach ($this->routes as $route) {
             $endpoints[] = [
                 "method" => $route['method'],
-                "path" => $route['readable_path'], // lesbare Version
+                "path" => $route['readable_path'],
                 "description" => $route['description']
             ];
         }
 
         $response = [
             "name" => "Dienstplan-API",
-            "version" => "0.2.0",
+            "version" => "0.3.0",
             "description" => "API zur Verwaltung von Dienstplänen in Apotheken",
             "endpoints" => $endpoints
         ];

@@ -29,7 +29,7 @@ namespace PDR\Roster;
  *
  * @author Mandelkow
  */
-class EmergencyService {
+class EmergencyService implements \JsonSerializable {
 
     private $dateObject;
     private $employeeKey;
@@ -75,5 +75,18 @@ class EmergencyService {
 
     public function getDateObject(): \DateTime {
         return $this->dateObject;
+    }
+
+    /**
+     * Specify data which should be serialized to JSON.
+     *
+     * @return array
+     */
+    public function jsonSerialize(): array {
+        return [
+            'employeeKey' => $this->employeeKey,
+            'date' => $this->dateObject->format('Y-m-d'),
+            'branchId' => $this->branchId,
+        ];
     }
 }
