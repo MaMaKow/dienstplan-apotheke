@@ -20,7 +20,7 @@ require_once 'BaseController.php';
 
 class BranchController extends BaseController {
 
-    public function getAllBranches($matches) {
+    public function getAllBranches(array $params) {
         try {
             $networkOfBranchOffices = new \PDR\Pharmacy\NetworkOfBranchOffices();
             $jsonEncodedBranches = $networkOfBranchOffices->getAllBranchesAsJson();
@@ -30,9 +30,9 @@ class BranchController extends BaseController {
         }
     }
 
-    public function getBranchById($matches) {
+    public function getBranchById(array $params) {
         try {
-            $branchId = (int) $matches[1];
+            $branchId = (int) $params['id'];
 
             $networkOfBranchOffices = new \PDR\Pharmacy\NetworkOfBranchOffices();
             if (!$networkOfBranchOffices->branch_exists($branchId)) {

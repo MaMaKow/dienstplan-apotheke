@@ -56,14 +56,14 @@ class RosterController extends BaseController {
     /**
      * Updates a roster in the database.
      *
-     * @param array $matches
+     * @param array $params
      * @return void
      */
-    public function updateRoster($matches) {
+    public function updateRoster(array $params) {
         $this->requireRosterEditPrivileges(); // Will exit if the user does not have the required privileges.
-        $branchIdInput = $matches['0'];
-        $dateStartInput = $matches['1'];
-        $dateEndInput = $matches['2'];
+        $branchIdInput = $params['branch_id'];
+        $dateStartInput = $params['date_start'];
+        $dateEndInput = $params['date_end'];
 
         try {
             $rosterFromPut = user_input::getRosterFromPutSecure();
@@ -95,14 +95,14 @@ class RosterController extends BaseController {
     /**
      * Deletes a roster day from the database.
      *
-     * @param array $matches
+     * @param array $params
      * @return void
      */
-    public function deleteRoster($matches) {
+    public function deleteRoster(array $params) {
         $this->requireRosterEditPrivileges(); // Will exit if the user does not have the required privileges.
         try {
-            $branchId = $matches['0'];
-            $date = $matches['1'];
+            $branchId = $params['branch_id'];
+            $date = $params['date'];
             user_input::deleteRosterDayFromDatabase($branchId, $date);
             $this->sendJson(['message' => 'Roster day deleted successfully'], 200);
         } catch (Exception $exception) {

@@ -22,19 +22,18 @@ class AbsenceController extends BaseController {
 
     /**
      * Get all absences for a specific year
-     * @param array $matches The regex matches containing the year
+     * @param array $params The regex matches containing the year
      * @return void
      */
-    public function getAbsencesByYear($matches) {
+    public function getAbsencesByYear(array $params) {
         try {
-            $year = (int) $matches[1];
-
+            $year = (int) $params['year'];
             $startDateObject = (new DateTime())->setDate($year, 1, 1);
             $endDateObject = (new DateTime())->setDate($year, 12, 31);
 
             $listOfAbsences = \PDR\Database\AbsenceDatabaseHandler::getAllAbsenceObjectsInPeriod(
-                $startDateObject,
-                $endDateObject
+                    $startDateObject,
+                    $endDateObject
             );
 
             $jsonEncodedAbsences = $listOfAbsences->getAbsencesAsJson();
@@ -47,7 +46,7 @@ class AbsenceController extends BaseController {
     /**
      * Get all absences of an employee for the current year
      */
-    public function getAllAbsences($matches) {
+    public function getAllAbsences(array $params) {
         try {
             $currentYear = date('Y');
 
@@ -55,8 +54,8 @@ class AbsenceController extends BaseController {
             $endDateObject = (new DateTime())->setDate($currentYear, 12, 31);
 
             $listOfAbsences = \PDR\Database\AbsenceDatabaseHandler::getAllAbsenceObjectsInPeriod(
-                $startDateObject,
-                $endDateObject
+                    $startDateObject,
+                    $endDateObject
             );
 
             $jsonEncodedAbsences = $listOfAbsences->getAbsencesAsJson();
@@ -68,21 +67,21 @@ class AbsenceController extends BaseController {
 
     /**
      * Get all absences of an employee for a specific year
-     * @param array $matches The regex matches containing the employee ID and year
+     * @param array $params The regex matches containing the employee ID and year
      * @return void
      */
-    public function getEmployeeAbsencesByYear($matches) {
+    public function getEmployeeAbsencesByYear(array $params) {
         try {
-            $employeeKey = (int) $matches[1];
-            $year = (int) $matches[2];
+            $employeeKey = (int) $params['id'];
+            $year = (int) $params['year'];
 
             $startDateObject = (new DateTime())->setDate($year, 1, 1);
             $endDateObject = (new DateTime())->setDate($year, 12, 31);
 
             $listOfAbsences = \PDR\Database\AbsenceDatabaseHandler::getAbsenceObjectsByEmployeeKeyInPeriod(
-                $startDateObject,
-                $endDateObject,
-                $employeeKey
+                    $startDateObject,
+                    $endDateObject,
+                    $employeeKey
             );
 
             $jsonEncodedAbsences = $listOfAbsences->getAbsencesAsJson();
@@ -94,21 +93,23 @@ class AbsenceController extends BaseController {
 
     /**
      * Get all absences of an employee for the current year
-     * @param array $matches The regex matches containing the employee ID
+     * @param array $params The regex matches containing the employee ID
      * @return void
      */
-    public function getEmployeeAbsences($matches) {
+    public function getEmployeeAbsences(array $params) {
         try {
-            $employeeKey = (int) $matches[1];
+
+
+            $employeeKey = (int) $params['id'];
             $currentYear = date('Y');
 
             $startDateObject = (new DateTime())->setDate($currentYear, 1, 1);
             $endDateObject = (new DateTime())->setDate($currentYear, 12, 31);
 
             $listOfAbsences = \PDR\Database\AbsenceDatabaseHandler::getAbsenceObjectsByEmployeeKeyInPeriod(
-                $startDateObject,
-                $endDateObject,
-                $employeeKey
+                    $startDateObject,
+                    $endDateObject,
+                    $employeeKey
             );
 
             $jsonEncodedAbsences = $listOfAbsences->getAbsencesAsJson();
