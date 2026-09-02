@@ -18,18 +18,16 @@
  */
 require_once 'BaseController.php';
 
-use PDR\Roster\OvertimeCollection;
-use PDR\Roster\Overtime;
 use \PDR\Database\OvertimeDatabaseHandler;
 
 class OvertimeController extends BaseController {
 
-    public function getOvertimesByEmployee($matches) {
+    public function getOvertimesByEmployee(array $params) {
         try {
-            $employeeKey = (int) $matches[1];
+            $employeeKey = (int) $params['id'];
 
             $overtimeCollection = OvertimeDatabaseHandler::getEmployeeOvertimes(
-                $employeeKey,
+                    $employeeKey,
             );
 
             $jsonEncodedOvertimes = $overtimeCollection->getOvertimesAsJson();

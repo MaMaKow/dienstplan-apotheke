@@ -22,7 +22,6 @@ class UserController extends BaseController {
 
     public function getAllUsers($matches) {
         $this->requireAdminPrivileges();
-
         try {
             $userBase = new PDR\Workforce\user_base();
             $users = $userBase->getAllUsersAsJson(); // Diese Methode müsste noch implementiert werden
@@ -32,15 +31,15 @@ class UserController extends BaseController {
         }
     }
 
-    public function getUserById($matches) {
-        if (($matches[1] ?? null) === 'me') {
+    public function getUserById(array $params) {
+        if (($params['id'] ?? null) === 'me') {
             return $this->getMyUserData();
         }
 
         $this->requireAdminPrivileges();
 
         try {
-            $userId = (int) $matches[1];
+            $userId = (int) $params['id'];
             $user = new \user($userId);
 
             // Sicherheitsrelevante Daten entfernen
@@ -50,6 +49,7 @@ class UserController extends BaseController {
             $this->sendError($e->getMessage());
         }
     }
+
     /**
      * Returns the currently authenticated user as safe JSON data.
      */
