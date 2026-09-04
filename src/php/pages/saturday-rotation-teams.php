@@ -57,7 +57,7 @@ $List_of_branch_objects = $network_of_branch_offices->get_list_of_branch_objects
 $html_select_branch = build_html_navigation_elements::build_select_branch($branch_id, $List_of_branch_objects);
 
 $List_of_teams = $saturday_rotation->List_of_teams;
-$holidays = new \PDR\DateTime\Holidays($this_saturday_date_object->format("Y"));
+$holidays = new \PDR\DateTime\Holidays();
 $team_id_today = $saturday_rotation->get_participation_team_id($this_saturday_date_object, $holidays);
 /**
  * @var int $position_of_team_this_week is an information about where in the list of teams this $team_id_today is.

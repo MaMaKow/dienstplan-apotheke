@@ -34,8 +34,8 @@ use PDR\Workforce\Employee;
  * </p>
  * @author Mandelkow
  */
-class AbsenceUtility
-{
+class AbsenceUtility {
+
     // Constants representing absence reasons
     public const REASON_VACATION = 1;
     public const REASON_REMAINING_VACATION = 2;
@@ -67,8 +67,7 @@ class AbsenceUtility
      * @return string Localized reason string.
      * @throws \Exception if the reason is not defined.
      */
-    public static function getReasonStringLocalized(int $reasonId): string
-    {
+    public static function getReasonStringLocalized(int $reasonId): string {
         switch ($reasonId) {
             case self::REASON_VACATION: return gettext('vacation');
             case self::REASON_REMAINING_VACATION: return gettext('remaining vacation');
@@ -93,8 +92,7 @@ class AbsenceUtility
         'changed_after_approval',
     );
 
-    private function gettext_fake()
-    {
+    private function gettext_fake() {
         gettext('approved');
         gettext('not_yet_approved');
         gettext('disapproved');
@@ -108,8 +106,7 @@ class AbsenceUtility
      * @return boolean Returns true if the operation is successful, otherwise false.
      * @throws Exception Throws an exception if an unknown command is encountered.
      */
-    public static function handleUserInput(): bool
-    {
+    public static function handleUserInput(): bool {
         global $session;
 
         // Check if the user has the privilege to create absence entries.
@@ -153,14 +150,14 @@ class AbsenceUtility
              */
             $currentUserName = $_SESSION['user_object']->get_user_name();
             \PDR\Database\AbsenceDatabaseHandler::insertAbsence(
-                $newAbsenceWithoutOverapObject->employeeKey,
-                $newAbsenceWithoutOverapObject->start,
-                $newAbsenceWithoutOverapObject->end,
-                $newAbsenceWithoutOverapObject->days,
-                $newAbsenceWithoutOverapObject->reasonId,
-                $newAbsenceWithoutOverapObject->comment,
-                $newAbsenceWithoutOverapObject->approval,
-                $currentUserName,
+                    $newAbsenceWithoutOverapObject->employeeKey,
+                    $newAbsenceWithoutOverapObject->start,
+                    $newAbsenceWithoutOverapObject->end,
+                    $newAbsenceWithoutOverapObject->days,
+                    $newAbsenceWithoutOverapObject->reasonId,
+                    $newAbsenceWithoutOverapObject->comment,
+                    $newAbsenceWithoutOverapObject->approval,
+                    $currentUserName,
             );
             return true;
         }
@@ -202,8 +199,7 @@ class AbsenceUtility
      * @param string $approval The approval status for the absence (default: 'approved').
      * @return bool Returns true if the operation is successful, otherwise false.
      */
-    private static function writeAbsenceDataToDatabase(\PDR\Workforce\Employee $employeeObject, string $beginn, string $ende, int $reasonId, string $comment = null, string $approval = 'approved'): bool
-    {
+    private static function writeAbsenceDataToDatabase(\PDR\Workforce\Employee $employeeObject, string $beginn, string $ende, int $reasonId, string $comment = null, string $approval = 'approved'): bool {
         // Create DateTime objects for the start and end dates of the absence.
         $dateStartObject = new \DateTime($beginn);
         $dateEndObject = new \DateTime($ende);
@@ -227,14 +223,14 @@ class AbsenceUtility
 
             // Insert the new absence record.
             \PDR\Database\AbsenceDatabaseHandler::insertAbsence(
-                $employeeKey,
-                $dateStartObject->format('Y-m-d'),
-                $dateEndObject->format('Y-m-d'),
-                $days,
-                $reasonId,
-                $comment,
-                $approval,
-                $_SESSION['user_object']->user_name
+                    $employeeKey,
+                    $dateStartObject->format('Y-m-d'),
+                    $dateEndObject->format('Y-m-d'),
+                    $days,
+                    $reasonId,
+                    $comment,
+                    $approval,
+                    $_SESSION['user_object']->user_name
             );
 
             // Check if the transaction is successful.
@@ -249,14 +245,14 @@ class AbsenceUtility
 
         // If not a replacement, directly insert the absence record.
         \PDR\Database\AbsenceDatabaseHandler::insertAbsence(
-            $employeeKey,
-            $dateStartObject->format('Y-m-d'),
-            $dateEndObject->format('Y-m-d'),
-            $days,
-            $reasonId,
-            $comment,
-            $approval,
-            $_SESSION['user_object']->user_name
+                $employeeKey,
+                $dateStartObject->format('Y-m-d'),
+                $dateEndObject->format('Y-m-d'),
+                $days,
+                $reasonId,
+                $comment,
+                $approval,
+                $_SESSION['user_object']->user_name
         );
 
         // Return true to indicate a successful operation.
@@ -271,20 +267,19 @@ class AbsenceUtility
      * @param employee $employeeObject The employee for whom to calculate absence days.
      * @return int The total number of absence days within the specified range.
      */
-    public static function calculateEmployeeAbsenceDays(\DateTime $dateStartObject, \DateTime $dateEndObject, \PDR\Workforce\Employee $employeeObject): int
-    {
+    public static function calculateEmployeeAbsenceDays(\DateTime $dateStartObject, \DateTime $dateEndObject, \PDR\Workforce\Employee $employeeObject): int {
         // Create a user dialog instance to handle messages.
         $userDialog = new \user_dialog();
 
         // Initialize the count of absence days.
         $days = 0;
 
-        $holidays = new \PDR\DateTime\Holidays($dateStartObject->format("Y"));
+        $holidays = new \PDR\DateTime\Holidays();
 
         // Loop through each day in the specified date range.
         for ($dateObject = clone $dateStartObject;
-            $dateObject <= $dateEndObject;
-            $dateObject->add(new \DateInterval('P1D'))) {
+                $dateObject <= $dateEndObject;
+                $dateObject->add(new \DateInterval('P1D'))) {
             // Get the weekday number (1 for Monday, 7 for Sunday).
             $currentWeekDayNumber = $dateObject->format('N');
 
@@ -328,8 +323,7 @@ class AbsenceUtility
      * @return array $Years <p>An array containing all the years, that are stored with at least one day in the `Dienstplan`table.
      * </p>
      */
-    public static function getRosteringYears(): array
-    {
+    public static function getRosteringYears(): array {
         $Years = array();
         $now = new \DateTime();
         $firstYear = (clone$now)->sub(new \DateInterval('P6Y'));
@@ -348,8 +342,7 @@ class AbsenceUtility
      * @param int $year The year for which to calculate holidays.
      * @return int The number of holidays due.
      */
-    public static function getNumberOfHolidaysDue(int $employeeKey, \PDR\Workforce\Workforce $workforce, int $year): int
-    {
+    public static function getNumberOfHolidaysDue(int $employeeKey, \PDR\Workforce\Workforce $workforce, int $year): int {
         $firstDayOfThisYear = new \DateTime("01.01." . $year);
         $lastDayOfThisYear = new \DateTime("31.12." . $year);
         $monthsWorkedInThisYear = 0;

@@ -76,7 +76,7 @@ Alle Stunden und Abwesenheiten mit aktuellstem Datum zuerst. Abwesenheit mit Fil
 
 filter for absence filter option for years and for specific reasons e.g. Vacation
 
-#### Jahresarbeitszeitkonto Ansicht nach Muster 28 
+#### Jahresarbeitszeitkonto Ansicht nach Muster 28
 composer require dompdf/dompdf
 annual-working-time-account.php
 
@@ -441,30 +441,6 @@ Protokollieren:
 #### Zwei-Faktor-Authentifizierung
 
 TOTP-Unterstützung für Administratoren.
-
-### API
-
-#### OpenAPI Dokumentation
-
-OpenAPI 3.1 Spezifikation erzeugen.
-
-#### API Tests
-
-Automatisierte API Integrationstests.
-
-### Import / Export
-
-#### CSV Import Mitarbeiter
-
-Mitarbeiterstammdaten per CSV importieren.
-
-#### CSV Export Dienstplan
-
-Export für externe Auswertungen.
-
-#### DATEV Export
-
-Vorbereitung der Daten für Lohnabrechnung.
 
 ### Tests
 
