@@ -181,7 +181,7 @@ class collaborative_vacation {
         $date_end_object->setTime(0, 0, 0, 0);
         $current_month = $date_start_object->format("n");
         $current_year = $date_start_object->format("Y");
-        $holidays = new \PDR\DateTime\Holidays($year);
+        $holidays = new \PDR\DateTime\Holidays();
         $absences = PDR\Database\AbsenceDatabaseHandler::getAllAbsenceObjectsInPeriod($date_start_object, $date_end_object);
 
         $year_container_html = "<div class=year-container>\n";
@@ -229,7 +229,7 @@ class collaborative_vacation {
      * @return string HTML div element containing a calendar with absences.
      */
     public function build_absence_month($year, $month_number) {
-        $holidays = new \PDR\DateTime\Holidays($year);
+        $holidays = new \PDR\DateTime\Holidays();
 
         $input_date_object = new \DateTime();
         $input_date_object->setDate($year, $month_number, 1);

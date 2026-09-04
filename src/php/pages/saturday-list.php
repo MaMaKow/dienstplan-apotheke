@@ -22,7 +22,7 @@ $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_SPECIAL_
 \PDR\Utility\GeneralUtility::createCookie("year", $year, 1);
 $dateObjectStart = new DateTime("first sat of jan $year");
 $dateObjectEnd = new DateTime("last sat of dec $year");
-$holidays = new \PDR\DateTime\Holidays($year);
+$holidays = new \PDR\DateTime\Holidays();
 $network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
 \PDR\Utility\GeneralUtility::createCookie("mandant", $branch_id, 30);

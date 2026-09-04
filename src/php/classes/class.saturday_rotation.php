@@ -164,7 +164,7 @@ class saturday_rotation {
         $holidays = null;
         for ($dateObject = (clone $lastDateObject)->add(new DateInterval('P7D')); $dateObject <= $this->target_date_object; $dateObject->add(new DateInterval('P7D'))) {
             if (null === $holidays or $dateObject->format("Y") !== $dateInLastLoop->format("Y")) {
-                $holidays = new \PDR\DateTime\Holidays($dateObject->format("Y"));
+                $holidays = new \PDR\DateTime\Holidays();
             }
             /*
              * Move the pointer in $this->List_of_teams to next()

@@ -26,7 +26,7 @@ $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_NUMBER_I
 \PDR\Utility\GeneralUtility::createCookie('datum', $dateSql, 0.5);
 \PDR\Utility\GeneralUtility::createCookie('year', $year, 0.5);
 $workforce = new PDR\Workforce\Workforce($year . "-01-01", $year . "-12-31");
-$holidays = new \PDR\DateTime\Holidays($year);
+$holidays = new \PDR\DateTime\Holidays();
 \PDR\Input\EmergencyServiceInputHandler::handleUserInput($session);
 if (isset($_POST) && !empty($_POST)) {
     // POST data has been submitted

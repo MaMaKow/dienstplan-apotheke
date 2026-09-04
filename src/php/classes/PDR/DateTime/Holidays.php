@@ -24,21 +24,26 @@ namespace PDR\DateTime;
 class Holidays {
 
     /**
-     * @var array $Holidays is an array in the format array(string (date in Y-m-d) => PDR\DateTime\Holiday)
+     * @var array<int, array<string, \PDR\DateTime\Holiday>>
      */
     private $holidays = array();
 
-    /**
-     * @var int $year the year, which the unix timestamps in the $holidays variable refer to.
-     */
-    private $year;
+    public function __construct() {
 
-    public function __construct(int $year) {
+    }
+
+    private function loadYear(int $year): void {
+        if (isset($this->holidays[$year])) {
+            return;
+        }
+
         $configuration = new \PDR\Application\Configuration();
-        $countryCode = $configuration->getCountryCode();
-        $stateCode = $configuration->getStateCode();
-        $this->holidays = $this->getHolidays($year, $countryCode, $stateCode);
-        $this->year = $year;
+
+        $this->holidays[$year] = $this->getHolidays(
+                $year,
+                $configuration->getCountryCode(),
+                $configuration->getStateCode()
+        );
     }
 
     /**
@@ -79,19 +84,21 @@ class Holidays {
      * @return boolean.
      */
     public function isHoliday(\DateTime $dateObject): bool {
-        if (intval($dateObject->format('Y')) !== $this->year) {
-            throw new \Exception("Date is not within the loaded holiday year.");
-        }
-        return isset($this->holidays[$dateObject->format('Y-m-d')]);
+        $year = (int) $dateObject->format('Y');
+
+        $this->loadYear($year);
+
+        return isset(
+                $this->holidays[$year][$dateObject->format('Y-m-d')]
+        );
     }
 
     public function getHolidayOnDate(\DateTime $dateObject): \PDR\DateTime\Holiday {
-        if (intval($dateObject->format('Y')) !== $this->year) {
-            throw new \Exception("Date is not within the loaded holiday year.");
-        }
         $dateString = $dateObject->format('Y-m-d');
-        if (isset($this->holidays[$dateString])) {
-            return $this->holidays[$dateString];
+        $year = (int) $dateObject->format('Y');
+        $this->loadYear($year);
+        if (isset($this->holidays[$year][$dateString])) {
+            return $this->holidays[$year][$dateString];
         }
         throw new \Exception("There is no holiday found on this date.");
     }

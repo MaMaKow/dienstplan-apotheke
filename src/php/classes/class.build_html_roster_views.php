@@ -353,7 +353,7 @@ abstract class build_html_roster_views {
              * Wenn die Feiertage für dieses Jahr bereits berechnet wurden, müssen wir sie nicht neu berechnen.
              */
             if (!isset($holidays) or $year != $yearOnLastRun) {
-                $holidays = new \PDR\DateTime\Holidays($year);
+                $holidays = new \PDR\DateTime\Holidays();
             }
             $head_table_html .= "<td>";
             $head_table_html .= "<a href='" . PDR_HTTP_SERVER_APPLICATION_PATH . "src/php/pages/roster-day-read.php?datum=$date_sql'>";
