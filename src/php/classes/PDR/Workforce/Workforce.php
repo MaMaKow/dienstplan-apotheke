@@ -24,8 +24,8 @@ namespace PDR\Workforce;
  *
  * @author Martin Mandelkow <netbeans-pdr@martin-mandelkow.de>
  */
-class Workforce
-{
+class Workforce {
+
     /**
      * @var array List_of_workforce_objects <p>is an array of known workforce objects</p>
      * @todo <p lang=de>Sobald alle existierenden und ehemaligen employees mit ihrem eigenen primary_key in der Tabelle stehen,
@@ -33,7 +33,7 @@ class Workforce
      * Dann können wir alle Mitarbeiter in eine Instanz dieses Objektes laden.
      * Diese Liste von verschiedenen workforces braucht es dann nicht mehr.</p>
      */
-    private static $ListOfWorkforceObjects = [];
+    static private $ListOfWorkforceObjects = array();
 
     /**
      *
@@ -58,8 +58,7 @@ class Workforce
      * @param string $dateStartSql
      * @param string $dateEndSql
      */
-    public function __construct(string $dateStartSql = null, string $dateEndSql = null)
-    {
+    public function __construct(string $dateStartSql = NULL, string $dateEndSql = NULL) {
         $this->dateStartSql = $dateStartSql;
         $this->dateEndSql = $dateEndSql;
         if (isset(self::$ListOfWorkforceObjects[$this->dateStartSql][$this->dateEndSql])) {
@@ -70,35 +69,35 @@ class Workforce
             $this->ListOfQualifiedPharmacistEmployees = self::$ListOfWorkforceObjects[$this->dateStartSql][$this->dateEndSql]->ListOfQualifiedPharmacistEmployees;
             $this->ListOfGoodsReceiptEmployees = self::$ListOfWorkforceObjects[$this->dateStartSql][$this->dateEndSql]->ListOfGoodsReceiptEmployees;
             $this->ListOfCompoundingEmployees = self::$ListOfWorkforceObjects[$this->dateStartSql][$this->dateEndSql]->ListOfCompoundingEmployees;
-            return true;
+            return TRUE;
         }
-        if (null === $dateStartSql) {
+        if (NULL === $dateStartSql) {
             $sqlQuery = 'SELECT * FROM `employees` '
                     . 'ORDER BY `last_name`, `first_name` ASC;';
             $result = \database_wrapper::instance()->run($sqlQuery);
         } else {
-            if (null === $dateEndSql) {
+            if (NULL === $dateEndSql) {
                 $dateEndSql = $dateStartSql;
             }
             $sqlQuery = 'SELECT * FROM `employees` '
                     . 'WHERE  (`end_of_employment` >= :date_start OR `end_of_employment` IS NULL) '
                     . 'AND  (`start_of_employment` <= :date_end OR `start_of_employment` IS NULL) '
                     . 'ORDER BY `last_name`, `first_name` ASC;';
-            $result = \database_wrapper::instance()->run($sqlQuery, ['date_end' => $dateEndSql, 'date_start' => $dateStartSql]);
+            $result = \database_wrapper::instance()->run($sqlQuery, array('date_end' => $dateEndSql, 'date_start' => $dateStartSql));
         }
-        $this->ListOfEmployees = [];
-        $this->ListOfQualifiedPharmacistEmployees = [];
-        $this->ListOfGoodsReceiptEmployees = [];
-        $this->ListOfCompoundingEmployees = [];
+        $this->ListOfEmployees = array();
+        $this->ListOfQualifiedPharmacistEmployees = array();
+        $this->ListOfGoodsReceiptEmployees = array();
+        $this->ListOfCompoundingEmployees = array();
         while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
             $this->ListOfEmployees[$row->primary_key] = new \PDR\Workforce\Employee((int) $row->primary_key, $row->last_name, $row->first_name, (float) $row->working_week_hours, (float) $row->lunch_break_minutes, $row->profession, $row->compounding, $row->goods_receipt, (int) $row->branch, $row->start_of_employment, $row->end_of_employment, $row->holidays);
-            if (in_array($row->profession, ['Apotheker', 'PI'])) {
+            if (in_array($row->profession, array('Apotheker', 'PI'))) {
                 $this->ListOfQualifiedPharmacistEmployees[] = $row->primary_key;
             }
-            if (true == $row->goods_receipt) {
+            if (TRUE == $row->goods_receipt) {
                 $this->ListOfGoodsReceiptEmployees[] = $row->primary_key;
             }
-            if (true == $row->compounding) {
+            if (TRUE == $row->compounding) {
                 $this->ListOfCompoundingEmployees[] = $row->primary_key;
             }
         }
@@ -107,23 +106,19 @@ class Workforce
         self::$ListOfWorkforceObjects[$this->dateStartSql][$this->dateEndSql] = $this;
     }
 
-    public function getListOfEmployees(): array
-    {
+    public function getListOfEmployees(): array {
         return $this->ListOfEmployees;
     }
 
-    public function getListOfQualifiedPharmacistEmployees(): array
-    {
+    public function getListOfQualifiedPharmacistEmployees(): array {
         return $this->ListOfQualifiedPharmacistEmployees;
     }
 
-    public function getListOfGoodsReceiptEmployees(): array
-    {
+    public function getListOfGoodsReceiptEmployees(): array {
         return $this->ListOfGoodsReceiptEmployees;
     }
 
-    public function getListOfCompoundingEmployees(): array
-    {
+    public function getListOfCompoundingEmployees(): array {
         return $this->ListOfCompoundingEmployees;
     }
 
@@ -134,16 +129,14 @@ class Workforce
      * @return string <p>last name of chosen employee or '???' if the employee is not known.
      * For example if an emergency service is not yet chosen ($employee_key = NULL)</p>
      */
-    public function getEmployeeLastName(int $employeeKey): string
-    {
+    public function getEmployeeLastName(int $employeeKey): string {
         if (isset($this->ListOfEmployees[$employeeKey])) {
             return $this->ListOfEmployees[$employeeKey]->getLastName();
         }
         return $employeeKey . '???';
     }
 
-    public function getEmployeeFirstName(int $employeeKey): string
-    {
+    public function getEmployeeFirstName(int $employeeKey): string {
         if (isset($this->ListOfEmployees[$employeeKey])) {
             return $this->ListOfEmployees[$employeeKey]->getFirstName();
         }
@@ -161,17 +154,15 @@ class Workforce
      * @param int $employeeKey The unique identifier for the employee.
      * @return string The full name of the employee or the employee key followed by '???' if not found.
      */
-    public function getEmployeeFullName(int $employeeKey): string
-    {
+    public function getEmployeeFullName(int $employeeKey): string {
         if (isset($this->ListOfEmployees[$employeeKey])) {
             return $this->ListOfEmployees[$employeeKey]->getFullName();
         }
         return $employeeKey . '???';
     }
 
-    private function getListOfAllEmployees(): array
-    {
-        $ListOfAllEmployees = [];
+    private function getListOfAllEmployees(): array {
+        $ListOfAllEmployees = array();
         $sqlQuery = 'SELECT * FROM `employees` ORDER BY `last_name`, `first_name` ASC;';
         $result = \database_wrapper::instance()->run($sqlQuery);
         while ($row = $result->fetch(\PDO::FETCH_OBJ)) {
@@ -186,16 +177,14 @@ class Workforce
      * @param int $employeeKey
      * @return string profession of the chosen employee
      */
-    public function getEmployeeProfession($employeeKey): string
-    {
+    public function getEmployeeProfession($employeeKey): string {
         if (isset($this->ListOfEmployees[$employeeKey])) {
             return $this->ListOfEmployees[$employeeKey]->getProfession();
         }
         return $employeeKey . '???';
     }
 
-    public function getEmployeeObject(?int $employeeKey): \PDR\Workforce\Employee
-    {
+    public function getEmployeeObject(?int $employeeKey): \PDR\Workforce\Employee {
         if (isset(self::$ListOfAllEmployees[$employeeKey])) {
             if (self::$ListOfAllEmployees[$employeeKey] instanceof \PDR\Workforce\Employee) {
                 return self::$ListOfAllEmployees[$employeeKey];
@@ -204,26 +193,23 @@ class Workforce
         throw new \Exception('This employee does not exist!');
     }
 
-    public function employeeExists(?int $employeeKey): bool
-    {
+    public function employeeExists(?int $employeeKey): bool {
         if (isset($this->ListOfEmployees[$employeeKey]) and $this->ListOfEmployees[$employeeKey] instanceof \PDR\Workforce\Employee) {
-            return true;
+            return TRUE;
         }
-        return false;
+        return FALSE;
     }
 
-    public function getListOfEmployeeNames(): array
-    {
-        $ListOfEmployeeLastNames = [];
+    public function getListOfEmployeeNames(): array {
+        $ListOfEmployeeLastNames = array();
         foreach ($this->ListOfEmployees as $employeeKey => $employee) {
             $ListOfEmployeeLastNames[$employeeKey] = $employee->getLastName();
         }
         return $ListOfEmployeeLastNames;
     }
 
-    public function getListOfEmployeeProfessions(): array
-    {
-        $ListOfEmployeeProfessions = [];
+    public function getListOfEmployeeProfessions(): array {
+        $ListOfEmployeeProfessions = array();
         foreach ($this->ListOfEmployees as $employeeKey => $employee) {
             $ListOfEmployeeProfessions[$employeeKey] = $employee->getProfession();
         }
@@ -240,12 +226,16 @@ class Workforce
      * Das Ergebnis sollte also static gespeichert werden.
      * </p>
      */
-    public function getEmployeeShortDescriptor(int $employeeKey): string
-    {
+    public function getEmployeeShortDescriptor(?int $employeeKey): string {
+        if ($employeeKey === null) {
+            return '';
+        }
+
         if (empty(self::$ListOfShortDescriptors)) {
             $this->createListOfShortDescriptors();
         }
-        return self::$ListOfShortDescriptors[$employeeKey];
+
+        return self::$ListOfShortDescriptors[$employeeKey] ?? '';
     }
 
     /**
@@ -255,9 +245,8 @@ class Workforce
      * "Alexandra Probst",
      * "Alexandra Prokoviev",</p>
      */
-    private function createListOfShortDescriptors(): void
-    {
-        self::$ListOfShortDescriptors = [];
+    private function createListOfShortDescriptors(): void {
+        self::$ListOfShortDescriptors = array();
         foreach (self::$ListOfAllEmployees as $employeeKey => $employee) {
             $numberOfCharactersOfFirstName = 2;
             $numberOfCharactersOfLastName = 2;
@@ -265,8 +254,8 @@ class Workforce
              * Try to add into the array: 2+2
              */
             $shortDescriptor = $this->createShortDescriptor($employee, $numberOfCharactersOfFirstName, $numberOfCharactersOfLastName);
-            $searchResult = array_search($shortDescriptor, self::$ListOfShortDescriptors, false);
-            if (false === $searchResult) {
+            $searchResult = array_search($shortDescriptor, self::$ListOfShortDescriptors, FALSE);
+            if (FALSE === $searchResult) {
                 self::$ListOfShortDescriptors[$employeeKey] = $shortDescriptor;
                 continue;
             }
@@ -278,8 +267,8 @@ class Workforce
             $numberOfCharactersOfLastName = 3;
             $this->changeShortDescriptorByChars($foundEmployeeObject, $numberOfCharactersOfFirstName, $numberOfCharactersOfLastName);
             $shortDescriptor = $this->createShortDescriptor($employee, $numberOfCharactersOfFirstName, $numberOfCharactersOfLastName);
-            $searchResult = array_search($shortDescriptor, self::$ListOfShortDescriptors, false);
-            if (false === $searchResult) {
+            $searchResult = array_search($shortDescriptor, self::$ListOfShortDescriptors, FALSE);
+            if (FALSE === $searchResult) {
                 self::$ListOfShortDescriptors[$employeeKey] = $shortDescriptor;
                 continue;
             }
@@ -290,8 +279,8 @@ class Workforce
             $numberOfCharactersOfLastName = 4;
             $this->changeShortDescriptorByChars($foundEmployeeObject, $numberOfCharactersOfFirstName, $numberOfCharactersOfLastName);
             $shortDescriptor = $this->createShortDescriptor($employee, $numberOfCharactersOfFirstName, $numberOfCharactersOfLastName);
-            $searchResult = array_search($shortDescriptor, self::$ListOfShortDescriptors, false);
-            if (false === $searchResult) {
+            $searchResult = array_search($shortDescriptor, self::$ListOfShortDescriptors, FALSE);
+            if (FALSE === $searchResult) {
                 self::$ListOfShortDescriptors[$employeeKey] = $shortDescriptor;
                 continue;
             }
@@ -302,8 +291,8 @@ class Workforce
             $numberOfCharactersOfLastName = 1;
             $this->changeShortDescriptorByChars($foundEmployeeObject, $numberOfCharactersOfFirstName, $numberOfCharactersOfLastName);
             $shortDescriptor = $this->createShortDescriptor($employee, $numberOfCharactersOfFirstName, $numberOfCharactersOfLastName);
-            $searchResult = array_search($shortDescriptor, self::$ListOfShortDescriptors, false);
-            if (false === $searchResult) {
+            $searchResult = array_search($shortDescriptor, self::$ListOfShortDescriptors, FALSE);
+            if (FALSE === $searchResult) {
                 self::$ListOfShortDescriptors[$employeeKey] = $shortDescriptor;
                 continue;
             }
@@ -322,14 +311,13 @@ class Workforce
      * @param type $numberOfCharactersOfFirstName
      * @param type $numberOfCharactersOfLastName
      */
-    private function changeShortDescriptorByChars(\PDR\Workforce\Employee $employee, int $numberOfCharactersOfFirstName, int $numberOfCharactersOfLastName): void
-    {
+    private function changeShortDescriptorByChars(\PDR\Workforce\Employee $employee, int $numberOfCharactersOfFirstName, int $numberOfCharactersOfLastName): void {
         $shortDescriptor = $this->createShortDescriptor($employee, $numberOfCharactersOfFirstName, $numberOfCharactersOfLastName);
         /**
          * Only add this variant, if it does not create another duplicate:
          */
-        $searchResult = array_search($shortDescriptor, self::$ListOfShortDescriptors, false);
-        if (false === $searchResult) {
+        $searchResult = array_search($shortDescriptor, self::$ListOfShortDescriptors, FALSE);
+        if (FALSE === $searchResult) {
             self::$ListOfShortDescriptors[$employee->getEmployeeKey()] = $shortDescriptor;
         }
     }
@@ -339,16 +327,14 @@ class Workforce
      * @param int $numberOfCharactersOfFirstName
      * @param int $numberOfCharactersOfLastName
      */
-    private function changeShortDescriptorWithKey(int $employeeKey, int $numberOfCharactersOfFirstName, int $numberOfCharactersOfLastName): void
-    {
+    private function changeShortDescriptorWithKey(\PDR\Workforce\Employee $employeeKey, int $numberOfCharactersOfFirstName, int $numberOfCharactersOfLastName): void {
         $employee = $this->getEmployeeObject($employeeKey);
         $shortDescriptor = $this->createShortDescriptor($employee, $numberOfCharactersOfFirstName, $numberOfCharactersOfLastName);
         $shortDescriptor .= $employee->getEmployeeKey();
         self::$ListOfShortDescriptors[$employeeKey] = $shortDescriptor;
     }
 
-    private function createShortDescriptor(\PDR\Workforce\Employee $employee, int $numberOfCharactersOfFirstName, int $numberOfCharactersOfLastName): string
-    {
+    private function createShortDescriptor(\PDR\Workforce\Employee $employee, int $numberOfCharactersOfFirstName, int $numberOfCharactersOfLastName): string {
         $shortDescriptor = "";
         $shortDescriptor .= mb_substr($employee->getFirstName(), 0, $numberOfCharactersOfFirstName);
         $shortDescriptor .= mb_substr($employee->getLastName(), 0, $numberOfCharactersOfLastName);
@@ -358,8 +344,7 @@ class Workforce
     /**
      * We just return some random employee
      */
-    public function getDefaultEmployeeKey(): ?int
-    {
+    public function getDefaultEmployeeKey(): ?int {
         if (isset($_SESSION['user_object']) and $_SESSION['user_object'] instanceof \user) {
             /**
              * Try to guess the employeeKey from the logged in user:
@@ -377,11 +362,10 @@ class Workforce
         /**
          * If there is no employee at all in the workforce, we return NULL:
          */
-        return null;
+        return NULL;
     }
 
-    public function getEmptyEmployee(): \PDR\Workforce\Employee
-    {
+    public function getEmptyEmployee(): \PDR\Workforce\Employee {
         $privateKey = null;
         $lastName = null;
         $firstName = null;
@@ -399,8 +383,7 @@ class Workforce
         return $employee;
     }
 
-    public function getKeyByFullName(String $employeeFullName): int
-    {
+    public function getKeyByFullName(String $employeeFullName): int {
         foreach (self::$ListOfAllEmployees as $employeeKey => $employee) {
             if ($employee->getFullName() === $employeeFullName) {
                 return $employeeKey;
@@ -408,8 +391,7 @@ class Workforce
         }
     }
 
-    public function getEmployeesAsJson(): string
-    {
+    public function getEmployeesAsJson(): string {
         $employees = [];
         foreach ($this->ListOfEmployees as $employeeKey => $employee) {
             $employees[] = [
