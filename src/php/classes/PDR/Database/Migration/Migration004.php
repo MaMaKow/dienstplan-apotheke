@@ -2,8 +2,9 @@
 
 namespace PDR\Database\Migration;
 
-final class Migration004 implements MigrationInterface {
+use database_wrapper;
 
+final class Migration004 implements MigrationInterface {
     #[\Override]
     public function getVersion(): int {
         return 4;

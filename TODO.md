@@ -1,6 +1,7 @@
 # TODO
 
 ## Errors
+InstallDatabase Klasse hat mehrere Bugs. Dringend beheben!
 
 ## Feature requests
 
@@ -443,6 +444,13 @@ Protokollieren:
 TOTP-Unterstützung für Administratoren.
 
 ### Tests
+
+#### Datenbankmigrationen
+
+Migrationstests mit Beispieldaten ergänzen. Prüfen, dass die Migrationen Daten
+korrekt übernehmen und erhalten, insbesondere `mandant` nach `branch` und
+`Grundplan` nach `principle_roster`. Auch einen unterbrochenen und erneut
+gestarteten Grundplan-Import abdecken, damit keine Duplikate entstehen.
 
 #### Tests für Arbeitszeitgesetz
 

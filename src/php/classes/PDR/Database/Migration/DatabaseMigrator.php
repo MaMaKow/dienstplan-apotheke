@@ -8,6 +8,7 @@ class DatabaseMigrator {
 
     private function getMigrations(): array {
         return [
+            new Migration000(),
             new Migration001(),
             new Migration002(),
             new Migration003(),
@@ -47,7 +48,7 @@ class DatabaseMigrator {
             $currentVersion = $this->getCurrentVersion();
 
             foreach ($this->getMigrations() as $migration) {
-                if ($migration->getVersion() <= $currentVersion) {
+                if (null !== $currentVersion && $migration->getVersion() <= $currentVersion) {
                     continue;
                 }
 
@@ -78,7 +79,7 @@ class DatabaseMigrator {
         }
     }
 
-    private function getCurrentVersion(): int {
+    private function getCurrentVersion(): ?int {
         $result = database_wrapper::instance()->run(
                 'SELECT MAX(`version`) AS `version` FROM `database_migrations`'
         );
@@ -86,7 +87,7 @@ class DatabaseMigrator {
         $row = $result->fetch();
 
         if (NULL === $row->version) {
-            return 0;
+            return null;
         }
 
         return (int) $row->version;

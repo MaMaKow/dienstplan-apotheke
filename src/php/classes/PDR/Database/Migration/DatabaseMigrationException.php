@@ -2,6 +2,6 @@
 
 namespace PDR\Database\Migration;
 
-class DatabaseMigrationException extends Exception {
+class DatabaseMigrationException extends \Exception {
 
 }

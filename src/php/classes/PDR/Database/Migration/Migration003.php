@@ -19,11 +19,12 @@
 
 namespace PDR\Database\Migration;
 
+use database_wrapper;
+
 /**
  * @author martin
  */
 class Migration003 implements MigrationInterface {
-
     #[\Override]
     public function getDescription(): string {
         return "Refactor absence table";

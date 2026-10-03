@@ -26,7 +26,10 @@ final class Migration009 implements MigrationInterface {
      * and renaming the existing `primary_key` column to `employee_key`.
      */
     private function refactorEmployeesArchive() {
-        if (!database_wrapper::database_table_column_exists(database_wrapper::get_database_name(), 'employees_archive', 'row_id')) {
+        if (
+            database_wrapper::database_table_exists('employees_archive')
+            && !database_wrapper::database_table_column_exists(database_wrapper::get_database_name(), 'employees_archive', 'row_id')
+        ) {
             $alterQueryId = "ALTER TABLE `employees_archive` "
                     . " ADD `row_id` INT UNSIGNED NOT NULL AUTO_INCREMENT FIRST, "
                     . " ADD PRIMARY KEY (`row_id`), "

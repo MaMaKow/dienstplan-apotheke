@@ -19,11 +19,12 @@
 
 namespace PDR\Database\Migration;
 
+use database_wrapper;
+
 /**
  * @author martin
  */
 class Migration002 implements MigrationInterface {
-
     #[\Override]
     public function getDescription(): string {
         return "Refactor absence table";
@@ -36,27 +37,29 @@ class Migration002 implements MigrationInterface {
 
     #[\Override]
     public function migrate(): void {
-        $this->refactor_absence_table();
+        $this->refactorAbsenceTable();
     }
 
-    private function refactor_absence_table() {
+    private function refactorAbsenceTable(): void {
+        if (!database_wrapper::database_table_column_exists(database_wrapper::get_database_name(), 'absence', 'comment')) {
+            $sql_query = "ALTER TABLE `absence` ADD `comment` VARCHAR(64) NULL DEFAULT NULL AFTER `days`;";
+            database_wrapper::instance()->run($sql_query);
+        }
+
         if (!database_wrapper::database_table_column_exists(database_wrapper::get_database_name(), 'absence', 'reason_id')) {
-            $Sql_query_array = array();
             /**
              * Change the database and all the tables and columns to utf8mb4:
              */
-            if (FALSE === $this->change_charset_to_utf8mb4()) {
-                throw new DatabaseMigrationException('Could not change charset to uft8mb4.');
-            }
+            $this->change_charset_to_utf8mb4();
             /**
              * Change the actual absence tables:
              */
-            $Sql_query_array[] = "CREATE TABLE IF NOT EXISTS `absence_reasons` (
+            database_wrapper::instance()->run("CREATE TABLE IF NOT EXISTS `absence_reasons` (
               `id` tinyint(3) UNSIGNED NOT NULL,
               `reason_string` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
               PRIMARY KEY (`id`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;";
-            $Sql_query_array[] = "INSERT INTO `absence_reasons` (`id`, `reason_string`) VALUES
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;");
+            database_wrapper::instance()->run("INSERT INTO `absence_reasons` (`id`, `reason_string`) VALUES
                 (1, 'vacation'),
                 (2, 'remaining vacation'),
                 (3, 'sickness'),
@@ -64,36 +67,56 @@ class Migration002 implements MigrationInterface {
                 (5, 'taken overtime'),
                 (6, 'paid leave of absence'),
                 (7, 'maternity leave'),
-                (8, 'parental leave');";
-            $Sql_query_array[] = "ALTER TABLE `absence` ADD `reason_id` TINYINT UNSIGNED NOT NULL AFTER `employee_id`;";
+                (8, 'parental leave')
+                ON DUPLICATE KEY UPDATE `reason_string` = VALUES(`reason_string`)");
+            if (!database_wrapper::database_table_column_exists(database_wrapper::get_database_name(), 'absence', 'reason_id')) {
+                database_wrapper::instance()->run("ALTER TABLE `absence` ADD `reason_id` TINYINT UNSIGNED NOT NULL AFTER `employee_id`");
+            }
 
-            $Sql_query_array[] = "UPDATE `absence` SET `reason_id` = '1' WHERE `absence`.`reason` = 'vacation';";
-            $Sql_query_array[] = "UPDATE `absence` SET `reason_id` = '2' WHERE `absence`.`reason` = 'remaining holiday';";
-            $Sql_query_array[] = "UPDATE `absence` SET `reason_id` = '3' WHERE `absence`.`reason` = 'sickness';";
-            $Sql_query_array[] = "UPDATE `absence` SET `reason_id` = '4' WHERE `absence`.`reason` = 'sickness of child';";
-            $Sql_query_array[] = "UPDATE `absence` SET `reason_id` = '5' WHERE `absence`.`reason` = 'unpaid leave of absence';";
-            $Sql_query_array[] = "UPDATE `absence` SET `reason_id` = '6' WHERE `absence`.`reason` = 'paid leave of absence';";
-            $Sql_query_array[] = "UPDATE `absence` SET `reason_id` = '7' WHERE `absence`.`reason` = 'maternity leave';";
-            $Sql_query_array[] = "UPDATE `absence` SET `reason_id` = '8' WHERE `absence`.`reason` = 'parental leave';";
-            $Sql_query_array[] = "ALTER TABLE `absence` ADD FOREIGN KEY (`reason_id`) REFERENCES `absence_reasons`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;";
-            $Sql_query_array[] = "ALTER TABLE `absence` DROP `reason`;";
-            database_wrapper::instance()->beginTransaction();
-            foreach ($Sql_query_array as $sql_query) {
-                $result = database_wrapper::instance()->run($sql_query);
+            $reasonUpdates = [
+                1 => 'vacation',
+                2 => 'remaining holiday',
+                3 => 'sickness',
+                4 => 'sickness of child',
+                5 => 'unpaid leave of absence',
+                6 => 'paid leave of absence',
+                7 => 'maternity leave',
+                8 => 'parental leave',
+            ];
+            foreach ($reasonUpdates as $reasonId => $reason) {
+                $result = database_wrapper::instance()->run(
+                    'UPDATE `absence` SET `reason_id` = :reason_id WHERE `reason` = :reason',
+                    ['reason_id' => $reasonId, 'reason' => $reason]
+                );
                 if ('00000' !== $result->errorCode()) {
-                    database_wrapper::instance()->rollBack();
                     throw new DatabaseMigrationException('Could not refactor absence table.');
                 }
             }
-            database_wrapper::instance()->commit();
-        }
-        if (!database_wrapper::database_table_column_exists(database_wrapper::get_database_name(), 'absence', 'comment')) {
-            $sql_query = "ALTER TABLE `absence` ADD `comment` VARCHAR(64) NULL DEFAULT NULL AFTER `days`;";
-            database_wrapper::instance()->run($sql_query);
+
+            if (!$this->absenceReasonForeignKeyExists()) {
+                database_wrapper::instance()->run(
+                    'ALTER TABLE `absence` ADD FOREIGN KEY (`reason_id`) '
+                    . 'REFERENCES `absence_reasons`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE'
+                );
+            }
+            if (database_wrapper::database_table_column_exists(database_wrapper::get_database_name(), 'absence', 'reason')) {
+                database_wrapper::instance()->run('ALTER TABLE `absence` DROP `reason`');
+            }
         }
     }
 
-    private function change_charset_to_utf8mb4() {
+    private function absenceReasonForeignKeyExists(): bool {
+        $result = database_wrapper::instance()->run(
+            'SELECT 1 FROM `information_schema`.`KEY_COLUMN_USAGE` '
+            . 'WHERE `TABLE_SCHEMA` = :database_name AND `TABLE_NAME` = \'absence\' '
+            . 'AND `COLUMN_NAME` = \'reason_id\' AND `REFERENCED_TABLE_NAME` = \'absence_reasons\' LIMIT 1',
+            ['database_name' => database_wrapper::get_database_name()]
+        );
+
+        return false !== $result->fetchColumn();
+    }
+
+    private function change_charset_to_utf8mb4(): void {
         $Sql_query_array = array();
         $quoted_database_name = database_wrapper::quote_identifier(database_wrapper::get_database_name());
         $Sql_query_array[] = "ALTER DATABASE $quoted_database_name CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;";
@@ -183,16 +206,11 @@ class Migration002 implements MigrationInterface {
         $Sql_query_array[] = "ALTER TABLE $quoted_database_name.`Dienstplan` CHANGE `Kommentar` `Kommentar` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;";
         $Sql_query_array[] = "ALTER TABLE $quoted_database_name.`user_email_notification_cache` CHANGE `notification_text` `notification_text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL;";
         $Sql_query_array[] = "ALTER TABLE $quoted_database_name.`principle_roster` CHANGE `comment` `comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL;";
-        if (!database_wrapper::instance()->inTransaction()) {
-            database_wrapper::instance()->beginTransaction();
-        }
         foreach ($Sql_query_array as $sql_query) {
             $result = database_wrapper::instance()->run($sql_query);
             if ('00000' !== $result->errorCode()) {
-                database_wrapper::instance()->rollBack();
                 throw new DatabaseMigrationException('Could not change charset to uft8mb4.');
             }
         }
-        database_wrapper::instance()->commit();
     }
 }

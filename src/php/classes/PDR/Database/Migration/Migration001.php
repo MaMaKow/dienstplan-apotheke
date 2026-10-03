@@ -2,8 +2,9 @@
 
 namespace PDR\Database\Migration;
 
-final class Migration001 implements MigrationInterface {
+use database_wrapper;
 
+final class Migration001 implements MigrationInterface {
     #[\Override]
     public function getVersion(): int {
         return 1;
@@ -21,8 +22,8 @@ final class Migration001 implements MigrationInterface {
 
     private function refactorOpeningTimesSpecialTable(): void {
         if (
-                \database_wrapper::database_table_exists('Sonderöffnungszeiten')
-                and !\database_wrapper::database_table_exists('opening_times_special')
+            \database_wrapper::database_table_exists('Sonderöffnungszeiten')
+            and !\database_wrapper::database_table_exists('opening_times_special')
         ) {
             \database_wrapper::instance()->run("RENAME TABLE `Sonderöffnungszeiten` TO `opening_times_special`;");
             $sql_query = "ALTER TABLE `opening_times_special` "

@@ -9,6 +9,8 @@ nbproject/
 composer.phar
 vendor/
 errorScreenshots/
+tests/bin/.test-db-port
+config/config.php.phpunit-backup
 
 # Dateien, die im Dienstplan erzeugt werden #
 #############################################
@@ -73,6 +75,9 @@ ehthumbs.db
 Thumbs.db
 /nbproject/private/
 .php-cs-fixer.cache
+# PHPUnit
+.phpunit.result.cache
+.phpunit.cache/
 
 # Selenium Java Test Output #
 ######################

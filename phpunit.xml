@@ -1,0 +1,11 @@
+<!-- phpunit.xml -->
+<phpunit bootstrap="tests/phpunit-bootstrap.php" colors="true">
+    <testsuites>
+        <testsuite name="unit">
+            <directory>tests/src/php/classes</directory>
+        </testsuite>
+        <testsuite name="integration">
+            <directory>tests/src/php/classes/PDR/Database/Migration</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>
