@@ -73,6 +73,9 @@ ehthumbs.db
 Thumbs.db
 /nbproject/private/
 .php-cs-fixer.cache
+# PHPUnit
+.phpunit.result.cache
+.phpunit.cache/
 
 # Selenium Java Test Output #
 ######################
