@@ -9,6 +9,8 @@ nbproject/
 composer.phar
 vendor/
 errorScreenshots/
+tests/bin/.test-db-port
+config/config.php.phpunit-backup
 
 # Dateien, die im Dienstplan erzeugt werden #
 #############################################

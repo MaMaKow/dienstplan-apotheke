@@ -110,6 +110,69 @@ write_status_line() {
   } >>"$status_log"
 }
 
+is_ollama_available() {
+  # Prüft, ob der Ollama-Dienst lokal erreichbar ist (kurzes Timeout, kein Hänger im CI-Lauf)
+  local http_code
+  http_code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 2 http://localhost:11434/api/tags)
+  [[ "$http_code" == "200" ]]
+}
+
+send_notification_email() {
+  local recipient="martin"
+  local subject="[CI/CD $mode] $result_status - dienstplan-apotheke"
+  local mail_body=""
+
+  if [[ "$result_status" == "SUCCESS" ]]; then
+    mail_body="CI/CD Pipeline erfolgreich durchgelaufen!
+
+Datum:   $(date '+%Y-%m-%d %H:%M:%S')
+Mode:    $mode
+Status:  $result_status
+Message: $result_message"
+
+  else
+    local log_snippet
+    log_snippet=$(grep -iE "error|failure|failed|exception|fatal" "$run_log" | tail -n 100)
+    if [ -z "$log_snippet" ]; then
+      log_snippet=$(tail -n 100 "$run_log")
+    fi
+
+    local ai_summary
+    if is_ollama_available; then
+      echo "Generiere KI-Fehleranalyse via Ollama..."
+      ai_summary=$(curl -s http://localhost:11434/api/generate -d "$(jq -n \
+        --arg model "qwen2.5:1.5b" \
+        --arg prompt "Analysiere diesen Fehler-Log eines PHP/Selenium CI/CD Runs. Antworte auf Deutsch kurz in max. 3 Stichpunkten: 1) Ursache 2) Betroffene Komponente/Datei 3) Lösungsvorschlag.\n\nLog:\n$log_snippet" \
+        '{model: $model, prompt: $prompt, stream: false, keep_alive: 0}')" | jq -r '.response' 2>/dev/null)
+
+      if [ -z "$ai_summary" ] || [ "$ai_summary" == "null" ]; then
+        ai_summary="Ollama-Analyse fehlgeschlagen (Antwort leer oder ungültig, evtl. zu wenig RAM)."
+      fi
+    else
+      ai_summary="Ollama ist nicht erreichbar (Dienst läuft nicht oder Port 11434 nicht offen) - keine KI-Fehleranalyse möglich."
+    fi
+
+    mail_body="FEHLER bei CI/CD Lauf!
+
+Datum:   $(date '+%Y-%m-%d %H:%M:%S')
+Mode:    $mode
+Status:  $result_status
+Message: $result_message
+
+==================================================
+KI-FEHLERANALYSE (Ollama / Qwen2.5)
+==================================================
+$ai_summary
+
+==================================================
+LOG-AUSSCHNITT (Letzte Fehler)
+==================================================
+$log_snippet"
+  fi
+
+  echo "$mail_body" | mail -s "$subject" "$recipient"
+}
+
 (
   flock -n 200 || {
     result_status="SKIPPED"

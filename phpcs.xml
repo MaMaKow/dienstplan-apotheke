@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<ruleset name="CustomPSR12">
+    <!-- PSR-12 als Basis nutzen -->
+    <rule ref="PSR12">
+        <!-- Prüfung der Klammerpositionen für Methoden und Klassen deaktivieren -->
+        <exclude name="Generic.Functions.OpeningFunctionBraceKernighanRitchie.ContentAfterBrace"/>
+        <exclude name="Squiz.Functions.MultiLineFunctionDeclaration.BraceOnSameLine"/>
+        <exclude name="PSR2.Methods.FunctionClosingBrace.SpacingBeforeClose"/>
+        <exclude name="PSR2.Classes.MethodDeclaration.BraceOnNextLine"/>
+        <exclude name="PSR2.Classes.ClassDeclaration.OpenBraceNewLine"/>
+    </rule>
+</ruleset>

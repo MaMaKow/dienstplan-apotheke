@@ -1,3 +1,3 @@
 <?php 
 
-const PDR_DATABASE_VERSION_HASH = '7a341ad62db04bbf30168a8efdbf4b6923d6cde9';
+const PDR_DATABASE_VERSION_HASH = '7d6bf8085e1a6c997b22cabf7d7d34d405cc2b73';

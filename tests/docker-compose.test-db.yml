@@ -1,0 +1,11 @@
+services:
+  test-db:
+    image: mysql:8.0
+    command: --sql-mode=STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION
+    environment:
+      MYSQL_ROOT_PASSWORD: phpunit_root_pw
+      MYSQL_DATABASE: pdr_migration_test
+    ports:
+      - "3306"
+    tmpfs:
+      - /var/lib/mysql
