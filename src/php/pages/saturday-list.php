@@ -16,14 +16,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 require '../../../default.php';
 $year = user_input::get_variable_from_any_input('year', FILTER_SANITIZE_SPECIAL_CHARS, date('Y'));
 \PDR\Utility\GeneralUtility::createCookie("year", $year, 1);
 $dateObjectStart = new DateTime("first sat of jan $year");
 $dateObjectEnd = new DateTime("last sat of dec $year");
 $holidays = new \PDR\DateTime\Holidays($year);
-$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices;
+$network_of_branch_offices = new \PDR\Pharmacy\NetworkOfBranchOffices();
 $branch_id = user_input::get_variable_from_any_input("mandant", FILTER_SANITIZE_NUMBER_INT, $network_of_branch_offices->get_main_branch_id());
 \PDR\Utility\GeneralUtility::createCookie("mandant", $branch_id, 30);
 
@@ -62,13 +61,11 @@ $html .= $table;
 
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'head.php';
 require PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/pages/menu.php';
-
 echo $html;
-
 function get_saturday_rotation_team_member_names_span(saturday_rotation $saturdayRotation, PDR\Workforce\Workforce $workforce, PDR\Roster\AbsenceCollection $absenceCollection) {
     $SaturdayRotationTeamMemberIds = array();
     $saturdayRotationTeamId = $saturdayRotation->team_id;
-    if (NULL !== $saturdayRotationTeamId and FALSE !== $saturdayRotationTeamId and array_key_exists($saturdayRotationTeamId, $saturdayRotation->List_of_teams)) {
+    if (null !== $saturdayRotationTeamId and false !== $saturdayRotationTeamId and array_key_exists($saturdayRotationTeamId, $saturdayRotation->List_of_teams)) {
         $SaturdayRotationTeamMemberIds = $saturdayRotation->List_of_teams[$saturdayRotationTeamId];
     }
 
@@ -111,7 +108,6 @@ function getRosteredEmployeesNames(array $Roster, PDR\Workforce\Workforce $workf
 
 function getAbsentEmployeesInfo(\DateTime $date_object, int $branch_id, PDR\Workforce\Workforce $workforce, PDR\Roster\AbsenceCollection $absenceCollection): array {
     $absentEmployees = array();
-
     // Mitarbeiter mit regulären Abwesenheiten (Urlaub, Krankheit, etc.)
     foreach ($absenceCollection->getIterator() as $absence) {
         $employeeKey = $absence->getEmployeeKey();
@@ -127,7 +123,7 @@ function getAbsentEmployeesInfo(\DateTime $date_object, int $branch_id, PDR\Work
             $emergencyService = \PDR\Database\EmergencyServiceDatabaseHandler::readEmergencyServiceOnDawn($date_object);
             $employeeKey = $emergencyService->getEmployeeKey();
 
-            if (NULL !== $employeeKey && isset($workforce->getListOfEmployees()[$employeeKey])) {
+            if (null !== $employeeKey && isset($workforce->getListOfEmployees()[$employeeKey])) {
                 // Nur hinzufügen, wenn nicht bereits wegen anderer Abwesenheit erfasst
                 if (!isset($absentEmployees[$employeeKey])) {
                     $absentEmployees[$employeeKey] = $workforce->getListOfEmployees()[$employeeKey]->getLastName() . " (" . gettext("Emergency service dawn") . ")";
@@ -157,7 +153,7 @@ function build_table_row(\DateTime $date_object, int $branch_id) {
     $dayFormatter->setPattern('EEE dd.MM.YYYY');
 
     $date_string = $dayFormatter->format($date_object->getTimestamp());
-    if (FALSE !== $holiday) {
+    if (false !== $holiday) {
         $table_row .= "<tr class='saturday-list-row-holiday'>";
         $table_row .= "<td colspan='99'>";
         $table_row .= $date_string;
@@ -169,7 +165,6 @@ function build_table_row(\DateTime $date_object, int $branch_id) {
         $rostered_employees_names_string = implode(', ', $Rostered_employees_names);
         $Saturday_rotation_team_member_names = get_saturday_rotation_team_member_names_span($saturday_rotation, $workforce, $absenceCollection);
         $saturday_rotation_team_member_names_string = implode(', ', $Saturday_rotation_team_member_names);
-
         // Abwesende Mitarbeiter ermitteln
         $absentEmployees = getAbsentEmployeesInfo($date_object, $branch_id, $workforce, $absenceCollection);
         $absent_employees_string = !empty($absentEmployees) ? implode(', ', $absentEmployees) : '&nbsp;';

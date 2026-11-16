@@ -27,7 +27,6 @@ namespace PDR\Output\HTML;
  * @author Mandelkow
  */
 class SaturdayListHtmlBuilder {
-
     public static function buildTableRow(\DateTime $dateObject, int $branchId, \PDR\DateTime\Holidays $holidays): string {
 
         $saturdayRotation = new \saturday_rotation($branchId);
@@ -65,6 +64,10 @@ class SaturdayListHtmlBuilder {
                     . self::getEmergencyServiceHint($dateObject)
                     . "</td>";
             $tableRow .= "<td>" . $rosteredEmployeesNamesString . "</td>";
+            $absentEmployees = getAbsentEmployeesInfo($dateObject, $branchId, $workforce, $absenceCollection);
+            $absent_employees_string = !empty($absentEmployees) ? implode(', ', $absentEmployees) : '&nbsp;';
+            $tableRow .= "<td><del>" . $absent_employees_string . "</del></td>";
+
             $tableRow .= "</tr>\n";
         }
         return $tableRow;
@@ -73,7 +76,7 @@ class SaturdayListHtmlBuilder {
     private static function getSaturdayRotationTeamMemberNamesSpan(\saturday_rotation $saturdayRotation, \PDR\Workforce\Workforce $workforce, \PDR\Roster\AbsenceCollection $absenceCollection) {
         $SaturdayRotationTeamMemberIds = array();
         $saturdayRotationTeamId = $saturdayRotation->team_id;
-        if (NULL !== $saturdayRotationTeamId and FALSE !== $saturdayRotationTeamId and array_key_exists($saturdayRotationTeamId, $saturdayRotation->List_of_teams)) {
+        if (null !== $saturdayRotationTeamId and false !== $saturdayRotationTeamId and array_key_exists($saturdayRotationTeamId, $saturdayRotation->List_of_teams)) {
             /**
              * <p lang=de>Es ist möglich, dass eine größere Zahl an Teams existiert hat, z.B. 6.
              * Wenn die Zuweisung der Teams bereits erfolgt ist, wurde z.B. das Team 6 in der Datenbank hinterlegt.
@@ -147,5 +150,35 @@ class SaturdayListHtmlBuilder {
         }
         $emergencyServiceHintText = $fridayText . $saturdayText . $sundayText;
         return $emergencyServiceHintText;
+    }
+    public function getAbsentEmployeesInfo(\DateTime $date_object, int $branch_id, PDR\Workforce\Workforce $workforce, PDR\Roster\AbsenceCollection $absenceCollection): array {
+        $absentEmployees = array();
+        // Mitarbeiter mit regulären Abwesenheiten (Urlaub, Krankheit, etc.)
+        foreach ($absenceCollection->getIterator() as $absence) {
+            $employeeKey = $absence->getEmployeeKey();
+            if (isset($workforce->getListOfEmployees()[$employeeKey])) {
+                $reasonString = \PDR\Utility\AbsenceUtility::getReasonStringLocalized($absence->getReasonId());
+                $absentEmployees[$employeeKey] = $workforce->getListOfEmployees()[$employeeKey]->getLastName() . " (" . $reasonString . ")";
+            }
+        }
+
+        // Mitarbeiter, die am Vortag Notdienst hatten
+        if (\PDR\Database\EmergencyServiceDatabaseHandler::isOurServiceDawn($date_object)) {
+            try {
+                $emergencyService = \PDR\Database\EmergencyServiceDatabaseHandler::readEmergencyServiceOnDawn($date_object);
+                $employeeKey = $emergencyService->getEmployeeKey();
+
+                if (null !== $employeeKey && isset($workforce->getListOfEmployees()[$employeeKey])) {
+                    // Nur hinzufügen, wenn nicht bereits wegen anderer Abwesenheit erfasst
+                    if (!isset($absentEmployees[$employeeKey])) {
+                        $absentEmployees[$employeeKey] = $workforce->getListOfEmployees()[$employeeKey]->getLastName() . " (" . gettext("Emergency service dawn") . ")";
+                    }
+                }
+            } catch (\Exception $e) {
+                // Kein Notdienst gefunden, ignorieren
+            }
+        }
+
+        return $absentEmployees;
     }
 }
