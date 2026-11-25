@@ -25,6 +25,20 @@
 class update_database {
 
     public function __construct() {
+        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/database_version_hash.php';
+        $migration_runner = new \PDR\Database\Migration\MigrationRunner(database_wrapper::instance());
+        $migration_runner->runMigrations(array(
+            new \PDR\Database\Migration\LegacyHashBridgeMigration(
+                'legacy-hash-' . PDR_DATABASE_VERSION_HASH,
+                'Bridge migration that applies legacy hash-based update_database() updates.',
+                function () {
+                    return $this->runLegacyHashBasedUpdate();
+                }
+            )
+        ));
+    }
+
+    private function runLegacyHashBasedUpdate() {
         /*
          * Check if update is necessary
          */
@@ -35,7 +49,6 @@ class update_database {
             $pdr_database_version_hash = $row->pdr_database_version_hash;
             error_log("Read pdr_database_version_hash from database: " . $pdr_database_version_hash . PHP_EOL, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
         }
-        require_once PDR_FILE_SYSTEM_APPLICATION_PATH . 'src/php/database_version_hash.php';
         error_log("Read PDR_DATABASE_VERSION_HASH from file: " . PDR_DATABASE_VERSION_HASH . PHP_EOL, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
         if (PDR_DATABASE_VERSION_HASH === $pdr_database_version_hash) {
             /*
@@ -67,7 +80,7 @@ class update_database {
         $message = date('Y-m-d') . ': ' . 'Write new pdr_database_version_hash into the database:' . PHP_EOL;
         error_log($message, 3, PDR_FILE_SYSTEM_APPLICATION_PATH . 'maintenance.log');
         $sql_query = 'REPLACE INTO `pdr_self` (`pdr_database_version_hash`) VALUES (:pdr_database_version_hash);';
-        $result = database_wrapper::instance()->run($sql_query, array(
+        database_wrapper::instance()->run($sql_query, array(
             'pdr_database_version_hash' => PDR_DATABASE_VERSION_HASH
         ));
         $message = date('Y-m-d') . ': ' . 'Done with update_database' . PHP_EOL;
